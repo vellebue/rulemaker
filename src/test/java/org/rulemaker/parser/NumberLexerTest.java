@@ -7,7 +7,7 @@ import org.antlr.runtime.Token;
 import org.antlr.runtime.TokenStream;
 
 
-public class RuleParserLexerTest extends BaseLexerTest {
+public class NumberLexerTest extends BaseLexerTest {
 	
 	@Test
 	public void shouldRecognizeAValidIntegerNumber() throws Exception {
@@ -18,7 +18,7 @@ public class RuleParserLexerTest extends BaseLexerTest {
 	}
 	
 	@Test
-	public void shouldRecognizeAValidFolatingPointNumber() throws Exception {
+	public void shouldRecognizeAValidFloatingPointNumber() throws Exception {
 		Double number = new Double("2.76");
 		TokenStream tokenStream = buildTokenStream(number.toString());
 		Token token = tokenStream.LT(1);
