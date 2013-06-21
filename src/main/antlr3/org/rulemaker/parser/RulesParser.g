@@ -48,7 +48,7 @@ expression: NUMBER {
                currentTermValue = $IDENTIFIER.text;
             } | STRING {
                currentTermType = Term.TermType.STRING;
-               currentTermValue = $STRING.text;
+               currentTermValue = $STRING.text.substring(1, $STRING.text.length() - 1);
             };
 
 term: IDENTIFIER EQUAL expression {
