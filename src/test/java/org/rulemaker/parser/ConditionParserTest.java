@@ -13,6 +13,14 @@ import org.rulemaker.model.Term;
 public class ConditionParserTest extends BaseParserTest {
 	
 	@Test
+	public void shouldRecognizeAnEmptyCondition() throws Exception{
+		RulesParserParser parser = this.buildParser("()");
+		parser.condition();
+		List<Term> termsList = parser.getCurrentConditionTermList();
+		assertEquals("No terms expected", 0, termsList.size());
+	}
+	
+	@Test
 	public void shouldRecognizeAValidSingleTermCondition() throws Exception {
 		RulesParserParser parser = this.buildParser("(documentType=11)");
 		parser.condition();
