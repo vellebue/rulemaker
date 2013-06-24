@@ -15,16 +15,23 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.rulemaker.model.Term;
+import org.rulemaker.model.Condition;
 
 }
 
 @parser::members {
-    List<Term> currentConditionTermList;
-    Term.TermType currentTermType;
-    String currentTermValue;
+
+    private List<Term> currentConditionTermList;
+    private Term.TermType currentTermType;
+    private String currentTermValue;
+    private List<Condition> conditionList = new ArrayList<Condition>();
     
     public List<Term> getCurrentConditionTermList() {
     	return currentConditionTermList;
+    }
+    
+    public List<Condition> getConditionList() {
+    	return conditionList;
     }
 }
 
@@ -52,11 +59,7 @@ expression: NUMBER {
             };
 
 term: IDENTIFIER EQUAL expression {
-
-	Term currentTerm = new Term();
-	currentTerm.setIdentifier($IDENTIFIER.text);
-	currentTerm.setExpressionType(currentTermType);
-	currentTerm.setExpressionValue(currentTermValue);
+	Term currentTerm = new Term($IDENTIFIER.text, currentTermType, currentTermValue);
 	currentConditionTermList.add(currentTerm);
 };
 
@@ -64,7 +67,10 @@ termList: term | term TERM_SEPARATOR termList;
 
 condition
 @init {
-    
-    currentConditionTermList = new ArrayList<Term>();
-    
-}: LEFT_PAR termList RIGHT_PAR;
+    currentConditionTermList = new ArrayList<Term>();    
+}: LEFT_PAR termList RIGHT_PAR {
+	Condition condition = new Condition(currentConditionTermList);
+	conditionList.add(condition);
+};
+
+conditionList: condition EOF | condition conditionList EOF;

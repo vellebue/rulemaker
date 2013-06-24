@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+import org.rulemaker.model.Condition;
 import org.rulemaker.model.Term;
 
 public class ConditionParserTest extends BaseParserTest {
@@ -32,10 +33,21 @@ public class ConditionParserTest extends BaseParserTest {
 		List<Term> termsList = parser.getCurrentConditionTermList();
 		List<Term> expectedTermList = new ArrayList<Term>();
 		expectedTermList.addAll(Arrays.asList(expectedTermsArray));
-		//assertEquals(expectedTermList.get(0), termsList.get(0));
-		//assertEquals(expectedTermList.get(1), termsList.get(1));
-		//assertEquals(expectedTermList.get(2), termsList.get(2));
 		assertEquals(expectedTermList, termsList);
+	}
+		
+	@Test
+	public void shouldRecognizeMultipleConditions() throws Exception {
+		Condition []expectedContitionsArray = {
+				new Condition(Arrays.asList(new Term []{new Term("documentType", Term.TermType.NUMBER, "11")})),
+				new Condition(Arrays.asList(new Term []{new Term("targetType", Term.TermType.IDENTIFIER, "X"),
+				                                        new Term("value", Term.TermType.STRING, "John Doe")}))
+		};
+		RulesParserParser parser = this.buildParser("(documentType=11) (targetType=X, value='John Doe')");
+		parser.conditionList();
+		List<Condition> conditionList = parser.getConditionList();
+		List<Condition> expectedConditionList = Arrays.asList(expectedContitionsArray);
+		assertEquals(expectedConditionList, conditionList);
 	}
 
 }
