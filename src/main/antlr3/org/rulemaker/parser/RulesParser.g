@@ -16,22 +16,28 @@ import java.util.ArrayList;
 
 import org.rulemaker.model.Term;
 import org.rulemaker.model.Condition;
+import org.rulemaker.model.Action;
 
 }
 
 @parser::members {
 
-    private List<Term> currentConditionTermList;
+    private List<Term> currentTokenTermList;
     private Term.TermType currentTermType;
     private String currentTermValue;
     private List<Condition> conditionList = new ArrayList<Condition>();
+    private List<Action> actionList = new ArrayList<Action>();
     
-    public List<Term> getCurrentConditionTermList() {
-    	return currentConditionTermList;
+    public List<Term> getCurrentTokenTermList() {
+    	return currentTokenTermList;
     }
     
     public List<Condition> getConditionList() {
     	return conditionList;
+    }
+    
+    public List<Action> getActionList() {
+    	return actionList;
     }
 }
 
@@ -44,6 +50,7 @@ RIGHT_PAR: ')';
 EQUAL: '=';
 STRING: '\'' (~('\'')|('\\\''))* '\'';
 TERM_SEPARATOR: ',';
+RULE_SEPARATOR: '->';
 
 //Parser tokens
 
@@ -60,17 +67,30 @@ expression: NUMBER {
 
 term: IDENTIFIER EQUAL expression {
 	Term currentTerm = new Term($IDENTIFIER.text, currentTermType, currentTermValue);
-	currentConditionTermList.add(currentTerm);
+	currentTokenTermList.add(currentTerm);
 };
 
 termList: term | term TERM_SEPARATOR termList;
 
 condition
 @init {
-    currentConditionTermList = new ArrayList<Term>();    
+    currentTokenTermList = new ArrayList<Term>();    
 }: LEFT_PAR termList RIGHT_PAR {
-	Condition condition = new Condition(currentConditionTermList);
+	Condition condition = new Condition(currentTokenTermList);
 	conditionList.add(condition);
 };
 
-conditionList: condition EOF | condition conditionList EOF;
+conditionList: condition | condition conditionList;
+
+action
+@init {
+	currentTokenTermList = new ArrayList<Term>();
+}: IDENTIFIER LEFT_PAR termList RIGHT_PAR {
+	Action action = new Action($IDENTIFIER.text, currentTokenTermList);
+	actionList.add(action);
+};
+
+actionList: action | action actionList;
+
+rule: RULE_SEPARATOR actionList | 
+      conditionList RULE_SEPARATOR actionList EOF;
