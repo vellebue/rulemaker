@@ -52,8 +52,8 @@ public class ConditionParserTest extends BaseParserTest {
 				                                        new Term("value", Term.TermType.STRING, "John Doe")}))
 		};
 		RulesParserParser parser = this.buildParser("(documentType=11) (targetType=X, value='John Doe')");
-		parser.condition();
-		parser.condition();
+		parser.conditionList();
+		//parser.condition();
 		List<Condition> conditionList = parser.getConditionList();
 		List<Condition> expectedConditionList = Arrays.asList(expectedContitionsArray);
 		assertEquals(expectedConditionList, conditionList);

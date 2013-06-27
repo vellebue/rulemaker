@@ -32,8 +32,8 @@ public class ActionParserTest extends BaseParserTest {
 	
 	public void shouldRecognizeMultipleActionTokens() throws Exception {
 		RulesParserParser parser = this.buildParser("create(value=11) update(level=X, name='John Doe')");
-		parser.action();
-		parser.action();
+		parser.actionList();
+		//parser.action();
 		List<Action> actionList = parser.getActionList();
 		List<Action> expectedActions = Arrays.asList(new Action("create", 
 				                                                Arrays.asList(new Term[]{new Term("value", Term.TermType.NUMBER, "11")})),

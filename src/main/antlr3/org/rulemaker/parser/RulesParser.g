@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import org.rulemaker.model.Term;
 import org.rulemaker.model.Condition;
 import org.rulemaker.model.Action;
+import org.rulemaker.model.Rule;
 
 }
 
@@ -27,6 +28,7 @@ import org.rulemaker.model.Action;
     private String currentTermValue;
     private List<Condition> conditionList = new ArrayList<Condition>();
     private List<Action> actionList = new ArrayList<Action>();
+    private Rule rule;
     
     public List<Term> getCurrentTokenTermList() {
     	return currentTokenTermList;
@@ -38,6 +40,10 @@ import org.rulemaker.model.Action;
     
     public List<Action> getActionList() {
     	return actionList;
+    }
+    
+    public Rule getRule() {
+    	return rule;
     }
 }
 
@@ -80,7 +86,7 @@ condition
 	conditionList.add(condition);
 };
 
-conditionList: condition | condition conditionList;
+conditionList: condition (| conditionList);
 
 action
 @init {
@@ -90,7 +96,11 @@ action
 	actionList.add(action);
 };
 
-actionList: action | action actionList;
+actionList: action (| actionList);
 
-rule: RULE_SEPARATOR actionList | 
-      conditionList RULE_SEPARATOR actionList EOF;
+rule: RULE_SEPARATOR actionList EOF {
+		rule = new Rule(new ArrayList<Condition>(), actionList);
+	} 
+	| conditionList RULE_SEPARATOR actionList EOF {
+		rule = new Rule(conditionList, actionList);
+    };
