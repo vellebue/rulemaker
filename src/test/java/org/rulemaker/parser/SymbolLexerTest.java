@@ -29,4 +29,11 @@ public class SymbolLexerTest extends BaseLexerTest {
 		Token token = tokenStream.LT(1);
 		assertEquals("Expected )", ")", token.getText());
 	}
+	
+	@Test
+	public void shouldConditionsActionsSeparatorBeRecognized() throws Exception {
+		TokenStream tokenStream = buildTokenStream("->");
+		Token token = tokenStream.LT(1);
+		assertEquals("->", token.getText());
+	}
 }
