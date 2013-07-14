@@ -29,6 +29,7 @@ import org.rulemaker.model.Rule;
     private List<Condition> conditionList = new ArrayList<Condition>();
     private List<Action> actionList = new ArrayList<Action>();
     private Rule rule;
+    private List<Rule> ruleList = new ArrayList<Rule>();
     
     public List<Term> getCurrentTokenTermList() {
     	return currentTokenTermList;
@@ -45,6 +46,10 @@ import org.rulemaker.model.Rule;
     public Rule getRule() {
     	return rule;
     }
+    
+    public List<Rule> getRuleList() {
+    	return ruleList;
+    }
 }
 
 //Lexer tokens
@@ -57,6 +62,7 @@ EQUAL: '=';
 STRING: '\'' (~('\'')|('\\\''))* '\'';
 TERM_SEPARATOR: ',';
 RULE_SEPARATOR: '->';
+SEMICOLON: ';';
 
 //Parser tokens
 
@@ -98,9 +104,22 @@ action
 
 actionList: action (| actionList);
 
-rule: RULE_SEPARATOR actionList EOF {
+rule: RULE_SEPARATOR actionList {
 		rule = new Rule(new ArrayList<Condition>(), actionList);
+		conditionList = new ArrayList<Condition>();
+		actionList = new ArrayList<Action>();
+		ruleList.add(rule);
 	} 
-	| conditionList RULE_SEPARATOR actionList EOF {
+	| conditionList RULE_SEPARATOR actionList {
 		rule = new Rule(conditionList, actionList);
+		conditionList = new ArrayList<Condition>();
+		actionList = new ArrayList<Action>();
+		ruleList.add(rule);
     };
+    
+ruleSet: rule EOF {
+		 //  ruleList.add(rule);
+	   }
+	   | rule SEMICOLON ruleSet EOF {
+	   	 //  ruleList.add(rule);
+	   };
