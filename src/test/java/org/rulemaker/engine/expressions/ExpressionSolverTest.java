@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.rulemaker.engine.expressions.exception.InvalidExpressionException;
 
 public abstract class ExpressionSolverTest {
 	
@@ -24,6 +25,15 @@ public abstract class ExpressionSolverTest {
 		Object result = expressionSolver.eval(contextMap, "person.name");
 		assertTrue("Result must be String", result instanceof String);
 		assertEquals(result, "Joe");
+	}
+	
+	@Test(expected = InvalidExpressionException.class)
+	public void shouldNotifyInvalidExpressionAsInvalidExpressionException() throws Exception {
+		Person joe = new Person();
+		joe.setName("Joe");
+		Map<String, Object> contextMap = new HashMap<String, Object>();
+		contextMap.put("person", joe);
+		Object result = expressionSolver.eval(contextMap, "person.nonExixtingField");
 	}
 
 }
