@@ -2,10 +2,14 @@ package org.rulemaker.engine.expressions;
 
 import java.util.Map;
 
-import net.sf.cglib.beans.BeanGenerator;
-import net.sf.cglib.core.Predicate;
 import ognl.Ognl;
-import ognl.OgnlException;
+
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtField;
+import javassist.CtMethod;
+import javassist.CtNewMethod;
+import javassist.NotFoundException;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.rulemaker.engine.expressions.exception.InvalidExpressionException;
@@ -17,46 +21,68 @@ public class OgnlExpressionSolver implements ExpressionSolver {
 		try {
 			return Ognl.getValue(expression, contextMap,
 					buildRootObject(contextMap));
-		} catch (OgnlException e) {
+		} catch (Exception e) {
 			throw new InvalidExpressionException(e);
 		}
 	}
 
 	/**
 	 * Builds OGNL root object based on context map, for each
-	 * key-value pair in context map will be a matching property in root
-	 * object with the same value.
+	 * key-value pair in context map will be a matching property 
+	 * (member field, getter and setter) 
+	 * in root object with the same value.
 	 * 
 	 * @param contextMap The source context map to build OGNL root object
 	 * @return The resulting root object.
+	 * @throws Exception If something goes wrong during process.
+	 * 
 	 */
-	private Object buildRootObject(Map<String, Object> contextMap) {
-		BeanGenerator bg = new BeanGenerator();
-		bg.setSuperclass(Object.class);
-		bg.setNamingPolicy(new net.sf.cglib.core.NamingPolicy() {
-			public String getClassName(String prefix, String source,
-					Object key, Predicate names) {
-				return prefix + "Impl";
-			}
-		});
+	private Object buildRootObject(Map<String, Object> contextMap) 
+			throws Exception {
+		// First define $RootObject class
+		ClassPool pool = ClassPool.getDefault();
+		CtClass rootObjectCtClass = pool.makeClass("$RootObject");
+		// Later add member fields and getter from contextMap
 		for (Map.Entry<String, Object> entry : contextMap.entrySet()) {
 			String propertyName = entry.getKey();
-			Class<?> propertyType = entry.getValue().getClass();
-			bg.addProperty(propertyName, propertyType);
+			Object propertyValue = entry.getValue();
+			Class<?> propertyValueType = propertyValue.getClass();
+			CtField properyCtField = new CtField(resolveCtClass(propertyValueType), propertyName, rootObjectCtClass);
+			rootObjectCtClass.addField(properyCtField);
+			CtMethod getterMethod = CtNewMethod.getter(resolveGetterName(propertyName), properyCtField);
+			rootObjectCtClass.addMethod(getterMethod);
+			CtMethod setterMethod = CtNewMethod.setter(resolveSetterName(propertyName), properyCtField);
+			rootObjectCtClass.addMethod(setterMethod);
 		}
-		Object beanInst = bg.create();
-		try {
-			for (Map.Entry<String, Object> entry : contextMap.entrySet()) {
-				String propertyName = entry.getKey();
-				Object propertyValue = entry.getValue();
-				PropertyUtils
-						.setProperty(beanInst, propertyName, propertyValue);
-			}
-		} catch (Exception e) {
-			// this should never happen
-			throw new RuntimeException(e);
+		Class<?> rootObjectClass = rootObjectCtClass.toClass(new ClassLoader(Thread.currentThread().getContextClassLoader()) {}, null);
+		//String rootObjectClassSource = rootObjectCtClass.toString();
+		// Now create instance
+		Object rootObjectInstance = rootObjectClass.newInstance();
+		for (Map.Entry<String, Object> entry : contextMap.entrySet()) {
+			String propertyName = entry.getKey();
+			Object propertyValue = entry.getValue();
+			PropertyUtils
+					.setProperty(rootObjectInstance, propertyName, propertyValue);
 		}
-		return beanInst;
+		rootObjectCtClass.detach();
+		return rootObjectInstance;
 	}
-
+	
+	private CtClass resolveCtClass(Class<?> clazz) throws NotFoundException {
+		ClassPool pool = ClassPool.getDefault();
+		return pool.get(clazz.getName());
+	}
+	
+	private String toUppercaseFirstLetter(String propertyName) {
+		return propertyName.substring(0, 1).toUpperCase() +
+			   propertyName.substring(1, propertyName.length());
+	}
+	
+	private String resolveGetterName(String propertyName) {
+		return "get" + toUppercaseFirstLetter(propertyName);
+	}
+	
+	private String resolveSetterName(String propertyName) {
+		return "set" + toUppercaseFirstLetter(propertyName);
+	}
 }
