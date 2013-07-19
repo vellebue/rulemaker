@@ -60,7 +60,7 @@ public abstract class ExpressionSolverTest {
 		joe.setName("Joe");
 		Map<String, Object> contextMap = new HashMap<String, Object>();
 		contextMap.put("person", joe);
-		Object result = expressionSolver.eval(contextMap, "person.nonExixtingField");
+		expressionSolver.eval(contextMap, "person.nonExixtingField");
 	}
 
 }
