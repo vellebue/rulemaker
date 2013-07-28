@@ -53,10 +53,23 @@ public class ConditionParserTest extends BaseParserTest {
 		};
 		RulesParserParser parser = this.buildParser("(documentType=11) (targetType=X, value='John Doe')");
 		parser.conditionList();
-		//parser.condition();
 		List<Condition> conditionList = parser.getConditionList();
 		List<Condition> expectedConditionList = Arrays.asList(expectedContitionsArray);
 		assertEquals(expectedConditionList, conditionList);
 	}
-
+	
+	@Test
+	public void shouldRecognizeSharpTermsInMultipleConditions() throws Exception {
+		RulesParserParser parser = this.buildParser("(#type='bill')  (documentType=11) (targetType=X, value='John Doe')");
+		Condition []expectedContitionsArray = {
+				new Condition(Arrays.asList(new Term []{new Term("type", Term.TermType.STRING, "bill", true)})),
+				new Condition(Arrays.asList(new Term []{new Term("documentType", Term.TermType.NUMBER, "11")})),
+				new Condition(Arrays.asList(new Term []{new Term("targetType", Term.TermType.IDENTIFIER, "X"),
+				                                        new Term("value", Term.TermType.STRING, "John Doe")}))
+		};
+		parser.conditionList();
+		List<Condition> conditionList = parser.getConditionList();
+		List<Condition> expectedConditionList = Arrays.asList(expectedContitionsArray);
+		assertEquals(expectedConditionList, conditionList);
+	}
 }

@@ -63,6 +63,7 @@ STRING: '\'' (~('\'')|('\\\''))* '\'';
 TERM_SEPARATOR: ',';
 RULE_SEPARATOR: '->';
 SEMICOLON: ';';
+SHARP_IDENTIFIER: '#'IDENTIFIER;
 
 //Parser tokens
 
@@ -78,9 +79,15 @@ expression: NUMBER {
             };
 
 term: IDENTIFIER EQUAL expression {
-	Term currentTerm = new Term($IDENTIFIER.text, currentTermType, currentTermValue);
-	currentTokenTermList.add(currentTerm);
-};
+		Term currentTerm = new Term($IDENTIFIER.text, currentTermType, currentTermValue);
+		currentTokenTermList.add(currentTerm);
+	}
+	| SHARP_IDENTIFIER EQUAL expression {
+		String identifierName = $SHARP_IDENTIFIER.text.substring(1, $SHARP_IDENTIFIER.text.length());
+		Term currentTerm = new Term(identifierName, currentTermType, currentTermValue);
+		currentTerm.setSharpTerm(true);
+		currentTokenTermList.add(currentTerm);
+	};
 
 termList: term | term TERM_SEPARATOR termList;
 

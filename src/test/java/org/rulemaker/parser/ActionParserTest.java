@@ -30,6 +30,7 @@ public class ActionParserTest extends BaseParserTest {
 		assertEquals(expectedAction, actionList.get(0));
 	}
 	
+	@Test
 	public void shouldRecognizeMultipleActionTokens() throws Exception {
 		RulesParserParser parser = this.buildParser("create(value=11) update(level=X, name='John Doe')");
 		parser.actionList();
@@ -39,6 +40,21 @@ public class ActionParserTest extends BaseParserTest {
 				                                                Arrays.asList(new Term[]{new Term("value", Term.TermType.NUMBER, "11")})),
 													 new Action("update", 
 															    Arrays.asList(new Term[]{new Term("level", Term.TermType.IDENTIFIER, "X"),
+															                  new Term("name", Term.TermType.STRING, "John Doe")})));
+		assertEquals(expectedActions, actionList);
+	}
+	
+	@Test
+	public void shouldRecognizeMultipleActionTokensWithSharpTerms() throws Exception {
+		RulesParserParser parser = this.buildParser("create(value=11) update(#condition=1,level=X, name='John Doe')");
+		parser.actionList();
+		//parser.action();
+		List<Action> actionList = parser.getActionList();
+		List<Action> expectedActions = Arrays.asList(new Action("create", 
+				                                                Arrays.asList(new Term[]{new Term("value", Term.TermType.NUMBER, "11")})),
+													 new Action("update", 
+															    Arrays.asList(new Term[]{new Term("condition", Term.TermType.NUMBER, "1", true),
+															    		      new Term("level", Term.TermType.IDENTIFIER, "X"),
 															                  new Term("name", Term.TermType.STRING, "John Doe")})));
 		assertEquals(expectedActions, actionList);
 	}
