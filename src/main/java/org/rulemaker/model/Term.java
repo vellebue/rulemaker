@@ -2,7 +2,7 @@ package org.rulemaker.model;
 
 public class Term {
 	
-	public enum TermType {NUMBER, STRING, IDENTIFIER};
+	public enum TermType {NUMBER, STRING, IDENTIFIER, EXPRESSION};
 	
 	private String identifier;
 	private TermType expressionType;

@@ -50,10 +50,24 @@ import org.rulemaker.model.Rule;
     public List<Rule> getRuleList() {
     	return ruleList;
     }
+    
+    private String replaceTrailingKeyCharacter(String source) {
+    	String target = null;
+    	boolean completed = false;
+    	while(!completed) {
+    		target = source.replace("\\}", "}");
+    		if (!target.equals(source)) {
+    			source = target;
+    		} else {
+    			completed = true;
+    		}
+    	}
+    	return target;
+    }
 }
 
 //Lexer tokens
-
+EXPRESSION_TOKEN: '${' ((~'}')|('\\}'))* '}';
 NUMBER: ('0'..'9')+('.'('0'..'9')*)?;
 IDENTIFIER: ('a'..'z' | 'A'..'Z')('a'..'z' | 'A'..'Z' | '0'..'9')*;
 LEFT_PAR: '(';
@@ -76,6 +90,11 @@ expression: NUMBER {
             } | STRING {
                currentTermType = Term.TermType.STRING;
                currentTermValue = $STRING.text.substring(1, $STRING.text.length() - 1);
+            } | EXPRESSION_TOKEN {
+            	currentTermType = Term.TermType.EXPRESSION;
+            	String expression = $EXPRESSION_TOKEN.text.trim();
+            	expression = replaceTrailingKeyCharacter(expression);
+                currentTermValue = expression.substring(2, expression.length() - 1);
             };
 
 term: IDENTIFIER EQUAL expression {

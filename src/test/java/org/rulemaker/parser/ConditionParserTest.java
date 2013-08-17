@@ -72,4 +72,26 @@ public class ConditionParserTest extends BaseParserTest {
 		List<Condition> expectedConditionList = Arrays.asList(expectedContitionsArray);
 		assertEquals(expectedConditionList, conditionList);
 	}
+	
+	@Test
+	public void shouldRecognizeASimpleExpressionCondition() throws Exception {
+		RulesParserParser parser = this.buildParser("(value=${16 + 148 - a})");
+		Condition []expectedContitionsArray = {
+				new Condition(Arrays.asList(new Term []{new Term("value", Term.TermType.EXPRESSION, "16 + 148 - a")}))};
+		parser.conditionList();
+		List<Condition> conditionList = parser.getConditionList();
+		List<Condition> expectedConditionList = Arrays.asList(expectedContitionsArray);
+		assertEquals(expectedConditionList, conditionList);
+	}
+	
+	@Test
+	public void shouldRecognizeAComplexExpressionCondition() throws Exception {
+		RulesParserParser parser = this.buildParser("(value=${new String[]{\"John\", \"Doe\"\\}[1]})");
+		Condition []expectedContitionsArray = {
+				new Condition(Arrays.asList(new Term []{new Term("value", Term.TermType.EXPRESSION, "new String[]{\"John\", \"Doe\"}[1]")}))};
+		parser.conditionList();
+		List<Condition> conditionList = parser.getConditionList();
+		List<Condition> expectedConditionList = Arrays.asList(expectedContitionsArray);
+		assertEquals(expectedConditionList, conditionList);
+	}
 }
