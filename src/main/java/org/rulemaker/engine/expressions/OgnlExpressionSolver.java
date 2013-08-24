@@ -19,10 +19,30 @@ public class OgnlExpressionSolver implements ExpressionSolver {
 	public Object eval(Map<String, Object> contextMap, String expression)
 			throws InvalidExpressionException {
 		try {
-			return Ognl.getValue(expression, contextMap,
-					buildRootObject(contextMap));
+			// Normalize variables to camel case notation
+			for (String variableName : contextMap.keySet()) {
+				String firstChar = variableName.charAt(0) + "";
+				if (firstChar.equals(firstChar.toUpperCase())) {
+					Object variableValue = contextMap.remove(variableName);
+					String newVariableName = "a$" + variableName;
+					expression = replaceAll(expression, variableName, newVariableName);
+					contextMap.put(newVariableName, variableValue);
+				}
+			}
+			Object finalValue = Ognl.getValue(expression, contextMap,
+					buildRootObject(contextMap));	
+			return finalValue;
 		} catch (Exception e) {
 			throw new InvalidExpressionException(e);
+		} finally {
+			// Undo changes to context map due to camel case notation
+			for (String variableName : contextMap.keySet()) {
+				if (variableName.startsWith("a$")) {
+					String oldVariableName = variableName.substring(2);
+					Object variableValue = contextMap.remove(variableName);
+					contextMap.put(oldVariableName, variableValue);
+				}
+			}
 		}
 	}
 
@@ -84,5 +104,18 @@ public class OgnlExpressionSolver implements ExpressionSolver {
 	
 	private String resolveSetterName(String propertyName) {
 		return "set" + toUppercaseFirstLetter(propertyName);
+	}
+	
+	private String replaceAll(String sourceString, String oldChar, String newChar) {
+		int index = sourceString.indexOf(oldChar);
+		if (index >= 0) {
+			int sliceIndex = index + oldChar.length();
+			String lowerSourceString = sourceString.substring(0, sliceIndex);
+			String upperSourceString = sourceString.substring(sliceIndex, sourceString.length());
+			return lowerSourceString.replace(oldChar, newChar) +
+					replaceAll(upperSourceString, oldChar, newChar);
+		} else {
+			return sourceString;
+		}
 	}
 }
