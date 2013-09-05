@@ -54,6 +54,16 @@ public abstract class ExpressionSolverTest {
 		assertEquals("3500.0", result.toString());
 	}
 	
+	@Test
+	public void shouldReturnNullValueAccessingNullValueFields() throws Exception {
+		Person joe = new Person();
+		joe.setName(null);
+		Map<String, Object> contextMap = new HashMap<String, Object>();
+		contextMap.put("joe", joe);
+		Object result = expressionSolver.eval(contextMap, "joe.name");
+		assertNull(result);
+	}
+	
 	@Test(expected = InvalidExpressionException.class)
 	public void shouldNotifyInvalidExpressionAsInvalidExpressionException() throws Exception {
 		Person joe = new Person();

@@ -66,7 +66,7 @@ public class OgnlExpressionSolver implements ExpressionSolver {
 		for (Map.Entry<String, Object> entry : contextMap.entrySet()) {
 			String propertyName = entry.getKey();
 			Object propertyValue = entry.getValue();
-			Class<?> propertyValueType = propertyValue.getClass();
+			Class<?> propertyValueType = (propertyValue != null) ? propertyValue.getClass() : Object.class;
 			CtField properyCtField = new CtField(resolveCtClass(propertyValueType), propertyName, rootObjectCtClass);
 			rootObjectCtClass.addField(properyCtField);
 			CtMethod getterMethod = CtNewMethod.getter(resolveGetterName(propertyName), properyCtField);
