@@ -11,7 +11,14 @@ abstract class TermMatcher {
 		
 		public static TermMatcher buildTermMatcher(Map<String, Object> globalVariablesMap,
 				Term term) {
-			if (term.getExpressionType().equals(Term.TermType.STRING)) {
+			if (term.isSharpTerm()) {
+				String termName = term.getIdentifier();
+				if (termName.equals(DefaultRuleMatcher.FACT_CONSTRAINT)) {
+					return new HashConstraintTermMatcher(new OgnlExpressionSolver(), globalVariablesMap, term);
+				} else {
+					return null;
+				}
+			} else if (term.getExpressionType().equals(Term.TermType.STRING)) {
 				return new StringTermMatcher(globalVariablesMap, term);
 			} else if (term.getExpressionType().equals(Term.TermType.IDENTIFIER)) {
 				return new IdentifierTermMatcher(globalVariablesMap, term);
