@@ -15,7 +15,11 @@ abstract class TermMatcher {
 				String termName = term.getIdentifier();
 				if (termName.equals(DefaultRuleMatcher.FACT_CONSTRAINT)) {
 					return new HashConstraintTermMatcher(new OgnlExpressionSolver(), globalVariablesMap, term);
-				} else {
+				} 
+				else if(termName.equals(DefaultRuleMatcher.CONDITION_CLASS_TYPE)) {
+					return new HashTypeTermMatcher(globalVariablesMap, term);
+				} 
+				else {
 					return null;
 				}
 			} else if (term.getExpressionType().equals(Term.TermType.STRING)) {
