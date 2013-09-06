@@ -49,5 +49,15 @@ public class HashTypeTermMatcherTest {
 		Person person = new Person("John");
 		assertFalse(matcher.matches(person));
 	}
+	
+	@Test
+	public void shouldNotMatchAnObjectWithNonExistingClassType() throws Exception {
+		Term term = new Term(DefaultRuleMatcher.CONDITION_CLASS_TYPE, Term.TermType.STRING, 
+				"com.fake.NonExistingClass", true);
+		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(new HashMap<String, Object>(), term);
+		((HashTypeTermMatcher) matcher).setClassSinonymsMap(new HashMap<String, Class<?>>());
+		Person person = new Person("John");
+		assertFalse(matcher.matches(person));
+	}
 
 }
