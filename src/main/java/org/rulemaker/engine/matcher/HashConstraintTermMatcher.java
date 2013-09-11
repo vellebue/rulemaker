@@ -1,7 +1,6 @@
 package org.rulemaker.engine.matcher;
 
-import java.util.Map;
-
+import org.rulemaker.engine.EngineContext;
 import org.rulemaker.engine.expressions.ExpressionSolver;
 import org.rulemaker.engine.expressions.exception.InvalidExpressionException;
 import org.rulemaker.model.Term;
@@ -10,9 +9,9 @@ public class HashConstraintTermMatcher extends TermMatcher{
 	
 	private ExpressionSolver expressionSolver;
 
-	protected HashConstraintTermMatcher(ExpressionSolver expressionSolver, Map<String, Object> globalVariablesMap,
+	protected HashConstraintTermMatcher(ExpressionSolver expressionSolver, EngineContext context,
 			Term termPattern) {
-		super(globalVariablesMap, termPattern);
+		super(context, termPattern);
 		this.expressionSolver = expressionSolver;
 	}
 

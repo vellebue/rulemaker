@@ -2,22 +2,20 @@ package org.rulemaker.engine.matcher;
 
 import java.util.Map;
 
+import org.rulemaker.engine.EngineContext;
 import org.rulemaker.model.Term;
 
 public class HashTypeTermMatcher extends TermMatcher {
 	
 	private Map<String, Class<?>> classSinonymsMap;
 
-	protected HashTypeTermMatcher(Map<String, Object> globalVariablesMap, Term termPattern) {
-		super(globalVariablesMap, termPattern);
+	protected HashTypeTermMatcher(EngineContext context, Term termPattern) {
+		super(context, termPattern);
+		classSinonymsMap = context.getClassSinonyms();
 	}
 	
 	protected Map<String, Class<?>> getClassSinonymsMap() {
 		return classSinonymsMap;
-	}
-
-	public void setClassSinonymsMap(Map<String, Class<?>> classSinonymsMap) {
-		this.classSinonymsMap = classSinonymsMap;
 	}
 
 	@Override

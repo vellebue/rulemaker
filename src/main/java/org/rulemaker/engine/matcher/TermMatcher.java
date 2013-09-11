@@ -2,6 +2,7 @@ package org.rulemaker.engine.matcher;
 
 import java.util.Map;
 
+import org.rulemaker.engine.EngineContext;
 import org.rulemaker.engine.expressions.OgnlExpressionSolver;
 import org.rulemaker.model.Term;
 
@@ -9,27 +10,27 @@ abstract class TermMatcher {
 	
 	public static class Factory {
 		
-		public static TermMatcher buildTermMatcher(Map<String, Object> globalVariablesMap,
+		public static TermMatcher buildTermMatcher(EngineContext context,
 				Term term) {
 			if (term.isSharpTerm()) {
 				String termName = term.getIdentifier();
 				if (termName.equals(DefaultRuleMatcher.FACT_CONSTRAINT)) {
-					return new HashConstraintTermMatcher(new OgnlExpressionSolver(), globalVariablesMap, term);
+					return new HashConstraintTermMatcher(new OgnlExpressionSolver(), context, term);
 				} 
 				else if(termName.equals(DefaultRuleMatcher.CONDITION_CLASS_TYPE)) {
-					return new HashTypeTermMatcher(globalVariablesMap, term);
+					return new HashTypeTermMatcher(context, term);
 				} 
 				else {
 					return null;
 				}
 			} else if (term.getExpressionType().equals(Term.TermType.STRING)) {
-				return new StringTermMatcher(globalVariablesMap, term);
+				return new StringTermMatcher(context, term);
 			} else if (term.getExpressionType().equals(Term.TermType.IDENTIFIER)) {
-				return new IdentifierTermMatcher(globalVariablesMap, term);
+				return new IdentifierTermMatcher(context, term);
 			} else if (term.getExpressionType().equals(Term.TermType.NUMBER)) {
-				return new NumberTermMatcher(globalVariablesMap, term);
+				return new NumberTermMatcher(context, term);
 			} else if (term.getExpressionType().equals(Term.TermType.EXPRESSION)) {
-				return new ExpressionTermMatcher(new OgnlExpressionSolver(), globalVariablesMap, term);
+				return new ExpressionTermMatcher(new OgnlExpressionSolver(), context, term);
 			} else {
 				return null;
 			}
@@ -39,9 +40,9 @@ abstract class TermMatcher {
 	private Term termPattern;
 	private Map<String, Object> globalVariablesMap;
 	
-	protected TermMatcher(Map<String, Object> globalVariablesMap, Term termPattern) {
+	protected TermMatcher(EngineContext engineContext, Term termPattern) {
 		this.termPattern = termPattern;
-		this.globalVariablesMap = globalVariablesMap;
+		this.globalVariablesMap = engineContext.getGobalVariablesMap();
 	}
 	
 	protected Term getTermPattern() {

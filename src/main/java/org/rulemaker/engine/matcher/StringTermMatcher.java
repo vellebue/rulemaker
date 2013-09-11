@@ -1,15 +1,14 @@
 package org.rulemaker.engine.matcher;
 
-import java.util.Map;
-
 import org.apache.commons.beanutils.PropertyUtils;
+import org.rulemaker.engine.EngineContext;
 import org.rulemaker.model.Term;
 
 public class StringTermMatcher extends TermMatcher {
 
-	protected StringTermMatcher(Map<String, Object> globalVariablesMap,
+	protected StringTermMatcher(EngineContext context,
 			Term termPattern) {
-		super(globalVariablesMap, termPattern);
+		super(context, termPattern);
 	}
 
 	@Override

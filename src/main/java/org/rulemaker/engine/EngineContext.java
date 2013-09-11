@@ -13,6 +13,8 @@ public class EngineContext {
 	
 	private List<Rule> rulesList;
 	private Map<String, List<Object>> factBase = new HashMap<String, List<Object>>();
+	private Map<String, Class<?>> classSinonyms = new HashMap<String, Class<?>>();
+	private Map<String, Object> gobalVariablesMap = new HashMap<String, Object>();
 	
 	private EngineContext() {
 		super();
@@ -24,6 +26,14 @@ public class EngineContext {
 		this.rulesList = rulesList;
 	}
 	
+	public void registerClass(String classNameSinonym, Class<?> clazz) {
+		classSinonyms.put(classNameSinonym, clazz);
+	}
+	
+	public Map<String, Class<?>> getClassSinonyms() {
+		return classSinonyms;
+	}
+
 	public List<Rule> getRulesList() {
 		return rulesList;
 	}
@@ -47,5 +57,13 @@ public class EngineContext {
 
 	public void addFact(Object fact) {
 		addFact(DEFAULT_RULE_LIST_NAME, fact);
+	}
+
+	public Map<String, Object> getGobalVariablesMap() {
+		return gobalVariablesMap;
+	}
+
+	public void setGobalVariablesMap(Map<String, Object> gobalVariablesMap) {
+		this.gobalVariablesMap = gobalVariablesMap;
 	}
 }

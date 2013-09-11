@@ -1,21 +1,18 @@
 package org.rulemaker.engine.matcher;
 
-import java.util.HashMap;
-
 import org.junit.Test;
 import static  org.junit.Assert.*;
 
+import org.rulemaker.engine.EngineContext;
 import org.rulemaker.model.Term;
 
 public class StringTermMatcherTest {
-	
-	
-	
+		
 	@Test
 	public void shouldBuildAStringTermMatcherForStringTermType() throws Exception {
 		Term term = new Term("name", Term.TermType.STRING, "John");
 		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(
-				new HashMap<String, Object>(), term);
+				new EngineContext(null), term);
 		assertTrue(matcher instanceof StringTermMatcher);
 	}
 	
@@ -24,7 +21,7 @@ public class StringTermMatcherTest {
 		Person matchingObject = new Person("John");
 		Term term = new Term("name", Term.TermType.STRING, "John");
 		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(
-				new HashMap<String, Object>(), term);
+				new EngineContext(null), term);
 		assertTrue(matcher.matches(matchingObject));
 	}
 	
@@ -33,7 +30,7 @@ public class StringTermMatcherTest {
 		Person matchingObject = new Person("Jaime");
 		Term term = new Term("name", Term.TermType.STRING, "John");
 		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(
-				new HashMap<String, Object>(), term);
+				new EngineContext(null), term);
 		assertFalse(matcher.matches(matchingObject));
 	}
 	
@@ -42,7 +39,7 @@ public class StringTermMatcherTest {
 		Person matchingObject = new Person("Jaime");
 		Term term = new Term("surname", Term.TermType.STRING, "John");
 		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(
-				new HashMap<String, Object>(), term);
+				new EngineContext(null), term);
 		assertFalse(matcher.matches(matchingObject));
 	}
 

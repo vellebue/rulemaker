@@ -1,28 +1,65 @@
 package org.rulemaker.engine.matcher;
 
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.beanutils.PropertyUtils;
+import org.rulemaker.engine.EngineContext;
 import org.rulemaker.model.Condition;
+import org.rulemaker.model.Term;
+
 
 class ConditionMatcher {
 	
-	private Map<String, Object> gobalVariablesMap = new HashMap<String, Object>();
+	private EngineContext engineContext; 
 	
 	public ConditionMatcher() {
 		super();
 	}
 	
-	public Map<String, Object> getGobalVariablesMap() {
-		return gobalVariablesMap;
+	protected EngineContext getEngineContext() {
+		return engineContext;
 	}
 
-	public void setGobalVariablesMap(Map<String, Object> gobalVariablesMap) {
-		this.gobalVariablesMap = gobalVariablesMap;
+	public void setEngineContext(EngineContext engineContext) {
+		this.engineContext = engineContext;
 	}
 
 	public boolean matches(Object object, Condition condition) {
-		// TODO Pending
-		return false;
+		Map<String, Object> globalVariablesMap = getEngineContext().getGobalVariablesMap();
+		Map<String, Object> objectMembersMap = buildMapFromObjectMembers(object);
+		// Add current object members to global variables map to make them available
+		// from expressions
+		globalVariablesMap.putAll(objectMembersMap);
+		boolean matches = true;
+		List<Term> conditionTerms = condition.getTermsList();
+		Iterator<Term> iterator = conditionTerms.iterator();
+		while(matches && iterator.hasNext()) {
+			Term currentTerm = iterator.next();
+			TermMatcher termMatcher = TermMatcher.Factory.buildTermMatcher(engineContext , currentTerm);
+			matches = termMatcher.matches(object);
+		}
+		// Remove object members due they are no longer available
+		removeKeysFromMap(globalVariablesMap, objectMembersMap.keySet());
+		return matches;
+	}
+	
+	private Map<String, Object> buildMapFromObjectMembers(Object object) {
+		try {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = PropertyUtils.describe(object);
+			map.remove("class");
+			return map;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	private void removeKeysFromMap(Map<String, Object> map, Set<String> keysToRemove) {
+		for (String aKey : keysToRemove) {
+			map.remove(aKey);
+		}
 	}
 }
