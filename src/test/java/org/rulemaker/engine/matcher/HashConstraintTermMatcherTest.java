@@ -29,6 +29,31 @@ public class HashConstraintTermMatcherTest {
 		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, term);
 		assertTrue(matcher.matches(targetPerson));
 	}
+	
+	@Test
+	public void shouldMatchAnObjectWhichSatisfiesConstraintAsNotNullObjectValue() throws Exception {
+		Term term = new Term(DefaultRuleMatcher.FACT_CONSTRAINT, Term.TermType.EXPRESSION, "age", true);
+		EngineContext context = new EngineContext(null); 
+		Map<String, Object> expressionMap = context.getGobalVariablesMap();
+		Person targetPerson = new Person("John");
+		targetPerson.setAge(26);
+		transferObjectFieldsToMap(expressionMap, targetPerson);
+		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, term);
+		assertTrue(matcher.matches(targetPerson));
+	}
+	
+	@Test
+	public void shouldNotMatchAnObjectWhichNotSatisfiesConstraintAsNullObjectValue() throws Exception {
+		Term term = new Term(DefaultRuleMatcher.FACT_CONSTRAINT, Term.TermType.EXPRESSION, "salary", true);
+		EngineContext context = new EngineContext(null); 
+		Map<String, Object> expressionMap = context.getGobalVariablesMap();
+		Person targetPerson = new Person("John");
+		targetPerson.setAge(26);
+		transferObjectFieldsToMap(expressionMap, targetPerson);
+		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, term);
+		assertFalse(matcher.matches(targetPerson));
+	}
+
 
 	@Test
 	public void shouldNotMatchAnObjectWhichNotSatisfiesConstraint() throws Exception {
