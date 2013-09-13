@@ -45,17 +45,21 @@ public class DefaultRuleMatcher implements RuleMatcher {
 			boolean foundMatching = false;
 			while (!foundMatching && factBaseObjectsIterator.hasNext()) {
 				Object currentCandidateObject = factBaseObjectsIterator.next();
+				List<String> previousVariableNames = getGlobalVariableNamesAsList(engineContext.getGobalVariablesMap());
 				if (matcher.matches(currentCandidateObject, headCondition)) {
+					List<String> variableNamesAferMatching = getGlobalVariableNamesAsList(engineContext.getGobalVariablesMap());
 					Map<String, Object> currentGlobalVariablesMap = engineContext.getGobalVariablesMap();
-					//Map<String, Object> chainedGlobalVariablesMap = new ChainedMap<String, Object>(currentGlobalVariablesMap);
 					currentGlobalVariablesMap.put("_" + conditionIndex, currentCandidateObject);
-					//engineContext.setGobalVariablesMap(chainedGlobalVariablesMap);
 					matchingObjectsList = matches(engineContext, rule, conditionIndex + 1);
-					//engineContext.setGobalVariablesMap(currentGlobalVariablesMap);
 					currentGlobalVariablesMap.remove("_" + conditionIndex);
 					if (matchingObjectsList != null) {
 						matchingObjectsList.add(0, currentCandidateObject);
 						foundMatching = true;
+					} else {
+						// Due its going to change matching for current condition
+						// variables added after condition matching are no longer needed
+						removeAddedVariableNamesAfterMatchingFromMap(previousVariableNames, variableNamesAferMatching, 
+								engineContext.getGobalVariablesMap());
 					}
 				}
 			}
@@ -83,22 +87,33 @@ public class DefaultRuleMatcher implements RuleMatcher {
 		return headingCondition;
 	}
 	
-	private class ChainedMap<K,V> extends HashMap<K,V> {
-		
-		private Map<K,V> parentMap;
-		
-		public ChainedMap(Map<K,V> parentMap) {
-			this.parentMap = parentMap;
+	private List<String> getGlobalVariableNamesAsList(Map<String, Object> variablesMap) {
+		List<String> variableNamesList = new ArrayList<String>();
+		for (String aVariableName : variablesMap.keySet()) {
+			variableNamesList.add(aVariableName);
 		}
-		
-		public V get(Object key) {
-			V value = super.get(key);
-			if (value == null) {
-				return parentMap.get(key);
-			} else {
-				return value;
+		return variableNamesList;
+	}
+	
+	private void removeAddedVariableNamesAfterMatchingFromMap(List<String> previousVariableNames, 
+			                                     List<String> variableNamesAfterMatching,
+			                                     Map<String, Object> variablesMap) {
+		// First find new variable names added
+		List<String> newVariableNames = new ArrayList<String>();
+		for (String aName : variableNamesAfterMatching) {
+			boolean found = false;
+			Iterator<String> previousVariableNamesIterator = previousVariableNames.iterator();
+			while(!found && previousVariableNamesIterator.hasNext()) {
+				String aPreviousName = previousVariableNamesIterator.next();
+				found = aPreviousName.equals(aName);
+			}
+			if (!found) {
+				newVariableNames.add(aName);
 			}
 		}
+		// Then remove them from map
+		for (String aName :newVariableNames) {
+			variablesMap.remove(aName);
+		}
 	}
-
 }

@@ -87,5 +87,20 @@ public class DefaultRuleMatcherTest {
 		assertEquals("Tommy", ((Person) matcherResults.get(0)).getName());
 		assertEquals("Jaimie", ((Person) matcherResults.get(1)).getName());
 	}
+	
+	@Test
+	public void shouldMatchARuleWithTreeConditionsAndThreeMatchingFacts() throws Exception {
+		Rule rule = new Rule(Arrays.asList(
+				new Condition(Arrays.asList(new Term("age", Term.TermType.IDENTIFIER, "X"))),
+				new Condition(Arrays.asList(new Term(DefaultRuleMatcher.FACT_CONSTRAINT, Term.TermType.EXPRESSION, "age < X", true))),
+				new Condition(Arrays.asList(new Term(DefaultRuleMatcher.FACT_CONSTRAINT, Term.TermType.EXPRESSION, "age < _2.age", true)))), 
+				new ArrayList<Action>());
+		RuleMatcher matcher = new DefaultRuleMatcher();
+		List<Object> matcherResults = matcher.matches(context, rule);
+		assertEquals(3, matcherResults.size());
+		assertEquals("Tommy", ((Person) matcherResults.get(0)).getName());
+		assertEquals("Jaimie", ((Person) matcherResults.get(1)).getName());
+		assertEquals("John", ((Person) matcherResults.get(2)).getName());
+	}
 
 }
