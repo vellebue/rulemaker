@@ -1,9 +1,10 @@
 package org.rulemaker.engine.expressions;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import ognl.Ognl;
-
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
@@ -20,14 +21,18 @@ public class OgnlExpressionSolver implements ExpressionSolver {
 			throws InvalidExpressionException {
 		try {
 			// Normalize variables to camel case notation
+			List<String> variableNamesToBeChanged = new ArrayList<String>();
 			for (String variableName : contextMap.keySet()) {
 				String firstChar = variableName.charAt(0) + "";
 				if (firstChar.equals(firstChar.toUpperCase())) {
-					Object variableValue = contextMap.remove(variableName);
-					String newVariableName = "a$" + variableName;
-					expression = replaceAll(expression, variableName, newVariableName);
-					contextMap.put(newVariableName, variableValue);
+					variableNamesToBeChanged.add(variableName);
 				}
+			}
+			for (String aVariableNameToBeChanged : variableNamesToBeChanged) {
+				Object variableValue = contextMap.remove(aVariableNameToBeChanged);
+				String newVariableName = "a$" + aVariableNameToBeChanged;
+				expression = replaceAll(expression, aVariableNameToBeChanged, newVariableName);
+				contextMap.put(newVariableName, variableValue);
 			}
 			Object finalValue = Ognl.getValue(expression, contextMap,
 					buildRootObject(contextMap));	
@@ -36,12 +41,16 @@ public class OgnlExpressionSolver implements ExpressionSolver {
 			throw new InvalidExpressionException(e);
 		} finally {
 			// Undo changes to context map due to camel case notation
+			List<String> variableNamesToBeRestored = new ArrayList<String>();
 			for (String variableName : contextMap.keySet()) {
 				if (variableName.startsWith("a$")) {
-					String oldVariableName = variableName.substring(2);
-					Object variableValue = contextMap.remove(variableName);
-					contextMap.put(oldVariableName, variableValue);
+					variableNamesToBeRestored.add(variableName);
 				}
+			}
+			for (String aVariableNameToBeRestored : variableNamesToBeRestored) {
+				String oldVariableName = aVariableNameToBeRestored.substring(2);
+				Object variableValue = contextMap.remove(aVariableNameToBeRestored);
+				contextMap.put(oldVariableName, variableValue);
 			}
 		}
 	}

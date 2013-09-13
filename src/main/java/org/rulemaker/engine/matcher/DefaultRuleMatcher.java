@@ -1,8 +1,10 @@
 package org.rulemaker.engine.matcher;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.rulemaker.engine.EngineContext;
 import org.rulemaker.model.Condition;
@@ -19,8 +21,13 @@ public class DefaultRuleMatcher implements RuleMatcher {
 	public static final String CONDITION_CLASS_TYPE = "type";
 	public static final String FACT_DOMAIN = "domain";
 	public static final String FACT_CONSTRAINT = "constraint";
-
+	
 	public List<Object> matches(EngineContext engineContext, Rule rule) {
+		// TODO Auto-generated method stub
+		return matches(engineContext, rule, 1);
+	}
+
+	public List<Object> matches(EngineContext engineContext, Rule rule, int conditionIndex) {
 		if (rule.getConditionList().size() == 0) {
 			// If there is no conditions matching is OK
 			// with 0 objects matched
@@ -39,7 +46,13 @@ public class DefaultRuleMatcher implements RuleMatcher {
 			while (!foundMatching && factBaseObjectsIterator.hasNext()) {
 				Object currentCandidateObject = factBaseObjectsIterator.next();
 				if (matcher.matches(currentCandidateObject, headCondition)) {
-					matchingObjectsList = matches(engineContext, rule);
+					Map<String, Object> currentGlobalVariablesMap = engineContext.getGobalVariablesMap();
+					//Map<String, Object> chainedGlobalVariablesMap = new ChainedMap<String, Object>(currentGlobalVariablesMap);
+					currentGlobalVariablesMap.put("_" + conditionIndex, currentCandidateObject);
+					//engineContext.setGobalVariablesMap(chainedGlobalVariablesMap);
+					matchingObjectsList = matches(engineContext, rule, conditionIndex + 1);
+					//engineContext.setGobalVariablesMap(currentGlobalVariablesMap);
+					currentGlobalVariablesMap.remove("_" + conditionIndex);
 					if (matchingObjectsList != null) {
 						matchingObjectsList.add(0, currentCandidateObject);
 						foundMatching = true;
@@ -68,6 +81,24 @@ public class DefaultRuleMatcher implements RuleMatcher {
 		}
 		rule.setConditionList(remaininConditions);
 		return headingCondition;
+	}
+	
+	private class ChainedMap<K,V> extends HashMap<K,V> {
+		
+		private Map<K,V> parentMap;
+		
+		public ChainedMap(Map<K,V> parentMap) {
+			this.parentMap = parentMap;
+		}
+		
+		public V get(Object key) {
+			V value = super.get(key);
+			if (value == null) {
+				return parentMap.get(key);
+			} else {
+				return value;
+			}
+		}
 	}
 
 }
