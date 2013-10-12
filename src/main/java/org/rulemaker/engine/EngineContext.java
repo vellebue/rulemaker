@@ -9,7 +9,7 @@ import org.rulemaker.model.Rule;
 
 public class EngineContext {
 	
-	public static final String DEFAULT_RULE_LIST_NAME = "$default"; 
+	public static final String DEFAULT_DOMAIN_LIST_NAME = "$default"; 
 	
 	private List<Rule> rulesList;
 	private Map<String, List<Object>> factBase = new HashMap<String, List<Object>>();
@@ -18,7 +18,7 @@ public class EngineContext {
 	
 	private EngineContext() {
 		super();
-		factBase.put(DEFAULT_RULE_LIST_NAME, new ArrayList<Object>());
+		factBase.put(DEFAULT_DOMAIN_LIST_NAME, new ArrayList<Object>());
 	}
 	
 	public EngineContext(List<Rule> rulesList) {
@@ -43,7 +43,7 @@ public class EngineContext {
 	}
 	
 	public List<Object> getFactList() {
-		return factBase.get(DEFAULT_RULE_LIST_NAME);
+		return factBase.get(DEFAULT_DOMAIN_LIST_NAME);
 	}
 	
 	public void addFact(String ruleListName, Object fact) {
@@ -56,7 +56,7 @@ public class EngineContext {
 	}
 
 	public void addFact(Object fact) {
-		addFact(DEFAULT_RULE_LIST_NAME, fact);
+		addFact(DEFAULT_DOMAIN_LIST_NAME, fact);
 	}
 
 	public Map<String, Object> getGobalVariablesMap() {

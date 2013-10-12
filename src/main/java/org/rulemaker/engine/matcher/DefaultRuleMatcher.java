@@ -9,6 +9,7 @@ import java.util.Map;
 import org.rulemaker.engine.EngineContext;
 import org.rulemaker.model.Condition;
 import org.rulemaker.model.Rule;
+import org.rulemaker.model.Term;
 
 /**
  * Default implementation for interface RuleMatcher.
@@ -40,7 +41,8 @@ public class DefaultRuleMatcher implements RuleMatcher {
 			Condition headCondition = removeHeadingConditionFromRule(rule);		
 			ConditionMatcher matcher = new ConditionMatcher();
 			matcher.setEngineContext(engineContext);
-			List<Object> factBaseObjects = engineContext.getFactList();
+			String domainName = extractDomainNameFromCondition(headCondition);
+			List<Object> factBaseObjects = engineContext.getFactBase().get(domainName);
 			Iterator<Object> factBaseObjectsIterator = factBaseObjects.iterator();
 			boolean foundMatching = false;
 			while (!foundMatching && factBaseObjectsIterator.hasNext()) {
@@ -115,5 +117,21 @@ public class DefaultRuleMatcher implements RuleMatcher {
 		for (String aName :newVariableNames) {
 			variablesMap.remove(aName);
 		}
+	}
+	
+	private String extractDomainNameFromCondition(Condition condition) {
+		Iterator<Term> termIterator = condition.getTermsList().iterator();
+		String domainName = null;
+		while ((domainName == null) && (termIterator.hasNext())) {
+			Term currentTerm = termIterator.next();
+			if (currentTerm.getIdentifier().equals(DefaultRuleMatcher.FACT_DOMAIN) &&
+			    currentTerm.isSharpTerm()) {
+				domainName = currentTerm.getExpressionValue();
+			}
+		}
+		if (domainName == null) {
+			domainName = EngineContext.DEFAULT_DOMAIN_LIST_NAME;
+		}
+		return domainName;
 	}
 }

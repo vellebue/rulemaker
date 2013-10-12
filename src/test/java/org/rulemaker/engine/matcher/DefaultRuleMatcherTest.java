@@ -20,6 +20,7 @@ public class DefaultRuleMatcherTest {
 	
 	@Before
 	public void setupEngineContext() {
+		// Add people to EngineContext
 		Person john = new Person("John");
 		john.setAge(18);
 		john.setHeight(1.72f);
@@ -32,6 +33,25 @@ public class DefaultRuleMatcherTest {
 		tommy.setAge(29);
 		tommy.setHeight(1.78f);
 		context.addFact(tommy);
+		// Later add month payments to 'salaries' domain
+		MonthPayment johnMayPayment = new MonthPayment();
+		johnMayPayment.setMonth(5);
+		johnMayPayment.setYear(2013);
+		johnMayPayment.setPersonName("John");
+		johnMayPayment.setAmount(1237.34);
+		context.addFact("salaries", johnMayPayment);
+		MonthPayment johnJunPayment = new MonthPayment();
+		johnJunPayment.setMonth(6);
+		johnJunPayment.setYear(2013);
+		johnJunPayment.setPersonName("John");
+		johnJunPayment.setAmount(1301.25);
+		context.addFact("salaries", johnJunPayment);
+		MonthPayment jaimieJunPayment = new MonthPayment();
+		jaimieJunPayment.setMonth(6);
+		jaimieJunPayment.setYear(2013);
+		jaimieJunPayment.setPersonName("Jaimie");
+		jaimieJunPayment.setAmount(932.15);
+		context.addFact("salaries", jaimieJunPayment);
 	}
 	
 	@Test
@@ -101,6 +121,22 @@ public class DefaultRuleMatcherTest {
 		assertEquals("Tommy", ((Person) matcherResults.get(0)).getName());
 		assertEquals("Jaimie", ((Person) matcherResults.get(1)).getName());
 		assertEquals("John", ((Person) matcherResults.get(2)).getName());
+	}
+	
+	@Test
+	public void shouldMatchARuleReferingTwoFactsOneOfThemIntoAnSpecificDomainInEngineContext() throws Exception {
+		Rule rule = new Rule(Arrays.asList(
+				new Condition(Arrays.asList(new Term("name", Term.TermType.STRING, "Jaimie"))),
+				new Condition(Arrays.asList(new Term(DefaultRuleMatcher.FACT_DOMAIN, Term.TermType.STRING, "salaries", true),
+						                    new Term("personName", Term.TermType.STRING, "Jaimie")))), 
+				new ArrayList<Action>());
+		RuleMatcher matcher = new DefaultRuleMatcher();
+		List<Object> matcherResults = matcher.matches(context, rule);
+		assertEquals(2, matcherResults.size());
+		Person jaimie = (Person) matcherResults.get(0);
+		MonthPayment jaimiePayment = (MonthPayment) matcherResults.get(1);
+		assertEquals("Jaimie", jaimie.getName());
+		assertEquals(932.15, jaimiePayment.getAmount(), 0.0);
 	}
 
 }

@@ -20,9 +20,13 @@ abstract class TermMatcher {
 				else if(termName.equals(DefaultRuleMatcher.CONDITION_CLASS_TYPE)) {
 					return new HashTypeTermMatcher(context, term);
 				} 
-				else {
+				else if (termName.equals(DefaultRuleMatcher.FACT_DOMAIN)) {
+					// Return a neutral term due this term must be processed before 
+					return new HashConstraintTermMatcher(new OgnlExpressionSolver(), context, new Term(DefaultRuleMatcher.FACT_CONSTRAINT, Term.TermType.EXPRESSION, "true", true));
+				} else {
 					return null;
 				}
+				
 			} else if (term.getExpressionType().equals(Term.TermType.STRING)) {
 				return new StringTermMatcher(context, term);
 			} else if (term.getExpressionType().equals(Term.TermType.IDENTIFIER)) {
