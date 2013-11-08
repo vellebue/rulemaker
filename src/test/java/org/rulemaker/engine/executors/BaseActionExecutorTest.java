@@ -24,7 +24,7 @@ public class BaseActionExecutorTest {
 
 		public void execute(List<Object> conditionMatchingObjects)
 				throws ExecutionException {
-			targetPerson = new Person(null);
+			targetPerson = new Person("");
 			putArgumentsIntoTargetObject(targetPerson, getRegularArgumentsMap());
 		}
 
@@ -50,6 +50,23 @@ public class BaseActionExecutorTest {
 		assertEquals(new Double(1345.23), targetPerson.getSalary());
 	}
 	
+	@Test
+	public void shouldPutArgumentsIntoTargetObjectWhenMapIsOkWithANullValue() throws Exception {
+		Map<String, Object> originMap = new HashMap<String, Object>();
+		originMap.put("name", null);
+		originMap.put("age", 16);
+		originMap.put("height", 1.72F);
+		originMap.put("salary", 1345.23);
+		DummyPersonExecutor executor = new DummyPersonExecutor();
+		executor.setRegularArgumentsMap(originMap);
+		executor.execute(null);
+		Person targetPerson = executor.getTargetPerson();
+		assertNull(targetPerson.getName());
+		assertEquals(new Integer(16), targetPerson.getAge());
+		assertEquals(new Float(1.72F), targetPerson.getHeight(), 0.0);
+		assertEquals(new Double(1345.23), targetPerson.getSalary());
+	}
+	
 	@Test(expected = org.rulemaker.engine.executors.exception.ExecutionException.class)
 	public void shouldThrowAnExceptionWhenThereIsAnUnknownFieldNameInMap() throws Exception {
 		Map<String, Object> originMap = new HashMap<String, Object>();
@@ -57,7 +74,6 @@ public class BaseActionExecutorTest {
 		DummyPersonExecutor executor = new DummyPersonExecutor();
 		executor.setRegularArgumentsMap(originMap);
 		executor.execute(null);
-		//Person targetPerson = executor.getTargetPerson();
 	}
 	
 	@Test(expected = org.rulemaker.engine.executors.exception.ExecutionException.class)

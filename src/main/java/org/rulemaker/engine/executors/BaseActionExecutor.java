@@ -106,7 +106,7 @@ public abstract class BaseActionExecutor implements ActionExecutor {
 					Class<?> targetArgumentType = PropertyUtils.getPropertyType(targetObject, aKey);
 					Object value = argumentsMap.get(aKey);
 					Class<?> valueType = (value != null) ? value.getClass() : Object.class;
-					if (targetArgumentType.isAssignableFrom(valueType)) {
+					if (targetArgumentType.isAssignableFrom(valueType) || (value == null)) {
 						PropertyUtils.setProperty(targetObject, aKey, value);
 					} else {
 						throw new ExecutionException("Incompatible types in target object: "
