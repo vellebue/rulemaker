@@ -102,6 +102,7 @@
 		</plugins>
 	</build>
 	<reporting>
+		<!-- Cobertura plugin -->
 		<plugins>
 			<plugin>
 				<!-- use mvn cobertura:cobertura to generate cobertura reports -->
@@ -113,6 +114,25 @@
 						<format>html</format>
 						<format>xml</format>
 					</formats>
+				</configuration>
+			</plugin>
+			<!-- PMD/CPD plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>3.0.1</version>
+				<configuration>
+					<linkXref>true</linkXref>
+					<sourceEncoding>utf-8</sourceEncoding>
+					<minimumTokens>100</minimumTokens>
+					<targetJdk>1.7</targetJdk>
+					<excludes>
+						<exclude>org/rulemaker/model/*.java</exclude>
+						<!--exclude>org/rulemaker/parser/RulesParser*.java</exclude-->
+					</excludes>
+					<excludeRoots>
+						<excludeRoot>target/generated-sources/**</excludeRoot>
+					</excludeRoots>
 				</configuration>
 			</plugin>
 		</plugins>
