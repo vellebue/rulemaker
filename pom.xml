@@ -3,11 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.bastanchu</groupId>
 	<artifactId>rulemaker</artifactId>
-	<version>0.1</version>
+	<version>${project.version}</version>
 	<packaging>jar</packaging>
 	<name>rulemaker</name>
 	<url>http://maven.apache.org</url>
 	<properties>
+	    <project.version>0.2</project.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<createChecksum>true</createChecksum>
 	</properties>
@@ -95,10 +96,10 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
+			<!--  plugin>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr3-maven-plugin</artifactId>
-			</plugin>
+			</plugin-->
 		</plugins>
 	</build>
 	<reporting>
@@ -122,19 +123,26 @@
 				<artifactId>maven-pmd-plugin</artifactId>
 				<version>3.0.1</version>
 				<configuration>
+				    <rulesets>
+				        <ruleset>${project.basedir}/src/main/resources/pmd.xml</ruleset>
+				    </rulesets>
 					<linkXref>true</linkXref>
-					<sourceEncoding>utf-8</sourceEncoding>
+					<sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
 					<minimumTokens>100</minimumTokens>
 					<targetJdk>1.7</targetJdk>
 					<excludes>
 						<exclude>org/rulemaker/model/*.java</exclude>
-						<!--exclude>org/rulemaker/parser/RulesParser*.java</exclude-->
 					</excludes>
 					<excludeRoots>
-						<excludeRoot>target/generated-sources/**</excludeRoot>
+						<excludeRoot>${project.basedir}/target/generated-sources/**</excludeRoot>
 					</excludeRoots>
 				</configuration>
 			</plugin>
+			<plugin>
+            	<groupId>org.apache.maven.plugins</groupId>
+            	<artifactId>maven-jxr-plugin</artifactId>
+            	<version>2.3</version>
+        	</plugin>
 		</plugins>
 	</reporting>
 </project>
