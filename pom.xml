@@ -126,7 +126,7 @@
 				    <rulesets>
 				        <ruleset>${project.basedir}/src/main/resources/pmd.xml</ruleset>
 				    </rulesets>
-					<linkXref>true</linkXref>
+					<linkXref>false</linkXref>
 					<sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
 					<minimumTokens>100</minimumTokens>
 					<targetJdk>1.7</targetJdk>
