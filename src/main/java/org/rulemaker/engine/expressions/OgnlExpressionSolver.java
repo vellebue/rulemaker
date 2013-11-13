@@ -20,6 +20,7 @@ public class OgnlExpressionSolver implements ExpressionSolver {
 	public Object eval(Map<String, Object> contextMap, String expression)
 			throws InvalidExpressionException {
 		try {
+			String normalizedExpression = expression;
 			// Normalize variables to camel case notation
 			List<String> variableNamesToBeChanged = new ArrayList<String>();
 			for (String variableName : contextMap.keySet()) {
@@ -31,10 +32,10 @@ public class OgnlExpressionSolver implements ExpressionSolver {
 			for (String aVariableNameToBeChanged : variableNamesToBeChanged) {
 				Object variableValue = contextMap.remove(aVariableNameToBeChanged);
 				String newVariableName = "a$" + aVariableNameToBeChanged;
-				expression = replaceAll(expression, aVariableNameToBeChanged, newVariableName);
+				normalizedExpression = replaceAll(normalizedExpression, aVariableNameToBeChanged, newVariableName);
 				contextMap.put(newVariableName, variableValue);
 			}
-			Object finalValue = Ognl.getValue(expression, contextMap,
+			Object finalValue = Ognl.getValue(normalizedExpression, contextMap,
 					buildRootObject(contextMap));	
 			return finalValue;
 		} catch (Exception e) {
