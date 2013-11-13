@@ -134,7 +134,7 @@
 						<exclude>org/rulemaker/model/*.java</exclude>
 					</excludes>
 					<excludeRoots>
-						<excludeRoot>${project.basedir}/target/generated-sources/**/*.*</excludeRoot>
+						<excludeRoot>${project.basedir}/target/generated-sources/antlr3</excludeRoot>
 					</excludeRoots>
 				</configuration>
 			</plugin>
