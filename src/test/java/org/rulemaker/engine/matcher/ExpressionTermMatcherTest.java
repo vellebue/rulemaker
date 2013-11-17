@@ -77,7 +77,7 @@ public class ExpressionTermMatcherTest {
 	
 	@Test(expected = MatchingException.class)
 	public void shouldRegisterAnExceptionWhenThereIsAFailEvaluatingTheExpression() throws Exception {
-		Term term = new Term("weight", Term.TermType.EXPRESSION, "17 + ");
+		Term term = new Term("height", Term.TermType.EXPRESSION, "17 + ");
 		EngineContext context = new EngineContext(null);
 		Map<String, Object> variablesMap = context.getGobalVariablesMap();
 		//variablesMap.put("X", 2);

@@ -3,6 +3,7 @@ package org.rulemaker.engine.matcher;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.rulemaker.engine.EngineContext;
 import org.rulemaker.engine.expressions.ExpressionSolver;
+import org.rulemaker.engine.expressions.exception.InvalidExpressionException;
 import org.rulemaker.engine.matcher.exception.MatchingException;
 import org.rulemaker.model.Term;
 
@@ -29,9 +30,12 @@ public class ExpressionTermMatcher extends TermMatcher {
 			} else {
 				return expressionValue == null;
 			}			
-		} catch (Exception e) {
+		} catch (InvalidExpressionException e) {
 			throw new MatchingException(e);
-		} 
+		} catch (Exception e) {
+			// No matching property to evaluate expression, return false
+			return false;
+		}
 	}
 
 }
