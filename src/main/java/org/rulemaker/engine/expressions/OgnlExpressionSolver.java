@@ -20,39 +20,69 @@ public class OgnlExpressionSolver implements ExpressionSolver {
 	public Object eval(Map<String, Object> contextMap, String expression)
 			throws InvalidExpressionException {
 		try {
-			String normalizedExpression = expression;
-			// Normalize variables to camel case notation
-			List<String> variableNamesToBeChanged = new ArrayList<String>();
-			for (String variableName : contextMap.keySet()) {
-				String firstChar = variableName.charAt(0) + "";
-				if (firstChar.equals(firstChar.toUpperCase())) {
-					variableNamesToBeChanged.add(variableName);
-				}
-			}
-			for (String aVariableNameToBeChanged : variableNamesToBeChanged) {
-				Object variableValue = contextMap.remove(aVariableNameToBeChanged);
-				String newVariableName = "a$" + aVariableNameToBeChanged;
-				normalizedExpression = replaceAll(normalizedExpression, aVariableNameToBeChanged, newVariableName);
-				contextMap.put(newVariableName, variableValue);
-			}
+			String normalizedExpression = normalizeExpression(contextMap, expression);
 			Object finalValue = Ognl.getValue(normalizedExpression, contextMap,
 					buildRootObject(contextMap));	
 			return finalValue;
 		} catch (Exception e) {
 			throw new InvalidExpressionException(e);
 		} finally {
-			// Undo changes to context map due to camel case notation
-			List<String> variableNamesToBeRestored = new ArrayList<String>();
-			for (String variableName : contextMap.keySet()) {
-				if (variableName.startsWith("a$")) {
-					variableNamesToBeRestored.add(variableName);
-				}
+			denormalizeContextMap(contextMap);
+		}
+	}
+	
+	/**
+	 * Normalizes the expression substituting variable names starting with
+	 * upper case letters rewritting them as a$OldName. Context map is 
+	 * also fixed as well.
+	 *  
+	 * @param contextMap The context map containing variable names and their values.
+	 *                   All variable names starting with upper case will be replaced
+	 *                   by a$OldName. 
+	 * @param expression The expression to be matched, all variables starting with upper 
+	 * 					 case will be replaced by a$OldName the same way.
+	 * @return
+	 */
+	private String normalizeExpression(Map<String, Object> contextMap, String expression) {
+		// Normalize variables to camel case notation
+		String normalizedExpression = expression;
+		// First locate variable names to be changed, starting with upper case.
+		List<String> variableNamesToBeChanged = new ArrayList<String>();
+		for (String variableName : contextMap.keySet()) {
+			String firstChar = variableName.charAt(0) + "";
+			if (firstChar.equals(firstChar.toUpperCase())) {
+				variableNamesToBeChanged.add(variableName);
 			}
-			for (String aVariableNameToBeRestored : variableNamesToBeRestored) {
-				String oldVariableName = aVariableNameToBeRestored.substring(2);
-				Object variableValue = contextMap.remove(aVariableNameToBeRestored);
-				contextMap.put(oldVariableName, variableValue);
+		}
+		// Then replace variable names by names starting with a$OldName
+		// both in the expression and in the context map
+		for (String aVariableNameToBeChanged : variableNamesToBeChanged) {
+			Object variableValue = contextMap.remove(aVariableNameToBeChanged);
+			String newVariableName = "a$" + aVariableNameToBeChanged;
+			normalizedExpression = replaceAll(normalizedExpression, aVariableNameToBeChanged, newVariableName);
+			contextMap.put(newVariableName, variableValue);
+		}
+		return normalizedExpression;
+	}
+	
+	/**
+	 * Denormalize context map replacing variable names starting with a$OldName with
+	 * their old variable names.
+	 *  
+	 * @param contextMap The context map where the variables to be denormalized are placed.
+	 */
+	private void denormalizeContextMap(Map<String, Object> contextMap) {
+		// Undo changes to context map due to camel case notation
+		List<String> variableNamesToBeRestored = new ArrayList<String>();
+		for (String variableName : contextMap.keySet()) {
+			if (variableName.startsWith("a$")) {
+				variableNamesToBeRestored.add(variableName);
 			}
+		}
+		for (String aVariableNameToBeRestored : variableNamesToBeRestored) {
+			String oldVariableName = aVariableNameToBeRestored.substring(2);
+			Object variableValue = contextMap.remove(aVariableNameToBeRestored);
+			contextMap.put(oldVariableName, variableValue);
 		}
 	}
 
