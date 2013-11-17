@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.rulemaker.engine.EngineContext;
 import org.rulemaker.engine.expressions.OgnlExpressionSolver;
+import org.rulemaker.engine.matcher.exception.MatchingException;
 import org.rulemaker.model.Term;
 
 abstract class TermMatcher {
@@ -57,6 +58,6 @@ abstract class TermMatcher {
 		return globalVariablesMap;
 	}
 
-	public abstract boolean matches(Object object);
+	public abstract boolean matches(Object object) throws MatchingException;
 	
 }

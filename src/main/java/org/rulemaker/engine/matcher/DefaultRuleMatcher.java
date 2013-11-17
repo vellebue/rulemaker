@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.rulemaker.engine.EngineContext;
+import org.rulemaker.engine.matcher.exception.MatchingException;
 import org.rulemaker.model.Condition;
 import org.rulemaker.model.Rule;
 import org.rulemaker.model.Term;
@@ -22,12 +23,12 @@ public class DefaultRuleMatcher implements RuleMatcher {
 	public static final String FACT_DOMAIN = "domain";
 	public static final String FACT_CONSTRAINT = "constraint";
 	
-	public List<Object> matches(EngineContext engineContext, Rule rule) {
+	public List<Object> matches(EngineContext engineContext, Rule rule) throws MatchingException {
 		// TODO Auto-generated method stub
 		return matches(engineContext, rule, 1);
 	}
 
-	public List<Object> matches(EngineContext engineContext, Rule rule, int conditionIndex) {
+	private List<Object> matches(EngineContext engineContext, Rule rule, int conditionIndex) throws MatchingException {
 		if (rule.getConditionList().size() == 0) {
 			// If there is no conditions matching is OK
 			// with 0 objects matched

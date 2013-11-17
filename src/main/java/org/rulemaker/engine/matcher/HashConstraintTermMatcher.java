@@ -3,6 +3,7 @@ package org.rulemaker.engine.matcher;
 import org.rulemaker.engine.EngineContext;
 import org.rulemaker.engine.expressions.ExpressionSolver;
 import org.rulemaker.engine.expressions.exception.InvalidExpressionException;
+import org.rulemaker.engine.matcher.exception.MatchingException;
 import org.rulemaker.model.Term;
 
 public class HashConstraintTermMatcher extends TermMatcher{
@@ -16,7 +17,7 @@ public class HashConstraintTermMatcher extends TermMatcher{
 	}
 
 	@Override
-	public boolean matches(Object object) {
+	public boolean matches(Object object) throws MatchingException{
 		Term term = getTermPattern();
 		if (term.getExpressionType().equals(Term.TermType.EXPRESSION)) {
 			try {
@@ -27,7 +28,7 @@ public class HashConstraintTermMatcher extends TermMatcher{
 					return value != null;
 				}
 			} catch (InvalidExpressionException e) {
-				throw new RuntimeException(e);
+				throw new MatchingException(e);
 			}
 		} else {
 			return false;

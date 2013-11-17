@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.rulemaker.engine.EngineContext;
+import org.rulemaker.engine.matcher.exception.MatchingException;
 import org.rulemaker.model.Action;
 import org.rulemaker.model.Condition;
 import org.rulemaker.model.Rule;
@@ -64,6 +65,15 @@ public class DefaultRuleMatcherTest {
 		List<Object> matcherResults = matcher.matches(context, rule);
 		assertEquals(1, matcherResults.size());
 		assertEquals("John", ((Person) matcherResults.get(0)).getName());
+	}
+	
+	@Test(expected = MatchingException.class)
+	public void shouldThrowAnExceptionWhenThereIsAProblemEvaluatingAnExpression() throws Exception {
+		Rule rule = new Rule(Arrays.asList(
+				new Condition(Arrays.asList(new Term("name", Term.TermType.EXPRESSION, "age > none")))), 
+				new ArrayList<Action>());
+		RuleMatcher matcher = new DefaultRuleMatcher();
+		matcher.matches(context, rule);
 	}
 	
 	@Test

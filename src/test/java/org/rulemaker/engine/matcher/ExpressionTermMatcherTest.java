@@ -3,10 +3,10 @@ package org.rulemaker.engine.matcher;
 import java.util.Map;
 
 import static org.junit.Assert.*;
+
 import org.junit.Test;
-
-
 import org.rulemaker.engine.EngineContext;
+import org.rulemaker.engine.matcher.exception.MatchingException;
 import org.rulemaker.model.Term;
 
 public class ExpressionTermMatcherTest {
@@ -75,15 +75,15 @@ public class ExpressionTermMatcherTest {
 		assertFalse(matcher.matches(targetObject));
 	}
 	
-	@Test
-	public void shouldNotMatchObjectWithNullValue() throws Exception {
-		Term term = new Term("age", Term.TermType.EXPRESSION, "17 + X");
+	@Test(expected = MatchingException.class)
+	public void shouldRegisterAnExceptionWhenThereIsAFailEvaluatingTheExpression() throws Exception {
+		Term term = new Term("weight", Term.TermType.EXPRESSION, "17 + ");
 		EngineContext context = new EngineContext(null);
 		Map<String, Object> variablesMap = context.getGobalVariablesMap();
-		variablesMap.put("X", 2);
+		//variablesMap.put("X", 2);
 		Person targetObject = new Person("John");
 		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, term);
-		targetObject.setAge(null);
-		assertFalse(matcher.matches(targetObject));
+		targetObject.setAge(-1);
+		matcher.matches(targetObject);
 	}
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.junit.Test;
 import org.rulemaker.engine.EngineContext;
+import org.rulemaker.engine.matcher.exception.MatchingException;
 import org.rulemaker.model.Term;
 
 import static org.junit.Assert.*;
@@ -88,6 +89,20 @@ public class HashConstraintTermMatcherTest {
 		transferObjectFieldsToMap(expressionMap, targetPerson);
 		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, term);
 		assertFalse(matcher.matches(targetPerson));
+	}
+	
+	@Test(expected = MatchingException.class)
+	public void shouldThrowAMatchingExceptionWhenThereIsAnIssueWithConstraintExpression() throws Exception {
+		// Notice the expression is "aged > 25" but variable in Person object is named age. There will be
+		// an exception evaluating the expression.
+		Term term = new Term(DefaultRuleMatcher.FACT_CONSTRAINT, Term.TermType.EXPRESSION, "aged > 25", true);
+		EngineContext context = new EngineContext(null); 
+		Map<String, Object> expressionMap = context.getGobalVariablesMap();
+		Person targetPerson = new Person("John");
+		targetPerson.setAge(24);
+		transferObjectFieldsToMap(expressionMap, targetPerson);
+		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, term);
+		matcher.matches(targetPerson);
 	}
 	
 	private void transferObjectFieldsToMap(Map<String, Object> variablesMap, Object object) throws Exception {

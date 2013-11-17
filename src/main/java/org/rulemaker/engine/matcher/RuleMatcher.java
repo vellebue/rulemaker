@@ -3,6 +3,7 @@ package org.rulemaker.engine.matcher;
 import java.util.List;
 
 import org.rulemaker.engine.EngineContext;
+import org.rulemaker.engine.matcher.exception.MatchingException;
 import org.rulemaker.model.Rule;
 
 /**
@@ -30,7 +31,10 @@ public interface RuleMatcher {
 	 *         and the order of the items in the list will correspond to the conditions in that rule.
 	 *         If there is no matching list for the given rule and the given engine context 
 	 *         <code>null</code> will be returned.
+	 *         
+	 * @throws MatchingException If there is a problem matching the rule with a fact. Usually due to
+	 *                           an error evaluating an expression.
 	 */
-	public List<Object> matches(EngineContext engineContext, Rule rule);
+	public List<Object> matches(EngineContext engineContext, Rule rule) throws MatchingException;
 
 }

@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.rulemaker.engine.EngineContext;
+import org.rulemaker.engine.matcher.exception.MatchingException;
 import org.rulemaker.model.Condition;
 import org.rulemaker.model.Term;
 
@@ -27,7 +28,7 @@ class ConditionMatcher {
 		this.engineContext = engineContext;
 	}
 
-	public boolean matches(Object object, Condition condition) {
+	public boolean matches(Object object, Condition condition) throws MatchingException {
 		Map<String, Object> globalVariablesMap = getEngineContext().getGobalVariablesMap();
 		Map<String, Object> objectMembersMap = buildMapFromObjectMembers(object);
 		// Add current object members to global variables map to make them available

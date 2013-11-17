@@ -3,6 +3,7 @@ package org.rulemaker.engine.matcher;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.rulemaker.engine.EngineContext;
 import org.rulemaker.engine.expressions.ExpressionSolver;
+import org.rulemaker.engine.matcher.exception.MatchingException;
 import org.rulemaker.model.Term;
 
 public class ExpressionTermMatcher extends TermMatcher {
@@ -16,7 +17,7 @@ public class ExpressionTermMatcher extends TermMatcher {
 	}
 
 	@Override
-	public boolean matches(Object object) {
+	public boolean matches(Object object) throws MatchingException {
 		Term term = getTermPattern();
 		String identifier = term.getIdentifier();
 		try {
@@ -29,7 +30,7 @@ public class ExpressionTermMatcher extends TermMatcher {
 				return expressionValue == null;
 			}			
 		} catch (Exception e) {
-			return false;
+			throw new MatchingException(e);
 		} 
 	}
 
