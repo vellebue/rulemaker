@@ -11,6 +11,9 @@
 	    <project.version>0.2</project.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<createChecksum>true</createChecksum>
+		<!--  maven.jar.override>on</maven.jar.override>
+        <maven.jar.pmd>5.0.5</maven.jar.pmd-->
+        <pmdVersion>5.0.5</pmdVersion>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -122,6 +125,15 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
 				<version>3.0.1</version>
+				<!-- dependencies>
+				  <dependency>
+				    <dependency>
+					  <groupId>pmd</groupId>
+	                  <artifactId>pmd</artifactId>
+	                  <version>5.0.3</version>
+                    </dependency>
+				  </dependency>
+				</dependencies-->
 				<configuration>
 				    <rulesets>
 				        <ruleset>${project.basedir}/src/main/resources/pmd.xml</ruleset>
