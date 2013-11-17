@@ -47,14 +47,14 @@ class ConditionMatcher {
 		return matches;
 	}
 	
-	private Map<String, Object> buildMapFromObjectMembers(Object object) {
+	private Map<String, Object> buildMapFromObjectMembers(Object object) throws MatchingException{
 		try {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> map = PropertyUtils.describe(object);
 			map.remove("class");
 			return map;
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new MatchingException(e);
 		}
 	}
 	
