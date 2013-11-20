@@ -55,8 +55,6 @@ public class UpdateActionExecutorTest {
 		engineContext.addFact(personMatched1);
 		engineContext.addFact(personMatched2);
 		UpdateActionExecutor executor = new UpdateActionExecutor();
-		//executor.setSharpArgumentsMap(sharpArgumentsMap);
-		//executor.setRegularArgumentsMap(regularArgumentsMap);
 		executor.setEngineContext(engineContext);
 		List<ActionError> errors = executor.validate(sharpArgumentsMap, regularArgumentsMap);
 		// There should be no errors

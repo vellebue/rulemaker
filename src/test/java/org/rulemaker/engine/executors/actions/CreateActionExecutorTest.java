@@ -33,7 +33,7 @@ public class CreateActionExecutorTest {
 			this.member2 = member2;
 		}
 	}
-
+	
 	@Test
 	public void shouldCreateAnInstanceGivenItsClassNameOnDefaultDomain() throws Exception {
 		Map<String, Object> sharpArgumentsMap = new HashMap<String, Object>();
@@ -133,4 +133,19 @@ public class CreateActionExecutorTest {
 		ActionError error = errors.get(0);
 		assertEquals("Class not found for #className=UnexistingClass",error.getDescription());
 	}
+	
+	@Test
+	public void shouldReportAnErrorWhenNoZeroArgumentConstructorIsAvailable() {
+		Map<String, Object> sharpArgumentsMap = new HashMap<String, Object>();
+		Map<String, Object> regularArgumentsMap = new HashMap<String, Object>();
+		sharpArgumentsMap.put("className", "org.rulemaker.engine.matcher.Person");
+		EngineContext context = new EngineContext(null);
+		CreateActionExecutor executor = new CreateActionExecutor();
+		executor.setEngineContext(context);
+		List<ActionError> errors = executor.validate(sharpArgumentsMap, regularArgumentsMap);
+		assertEquals(1, errors.size());
+		ActionError error = errors.get(0);
+		assertEquals("No zero argument constructor for class type org.rulemaker.engine.matcher.Person",error.getDescription());
+	}
+	
 }

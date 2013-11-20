@@ -19,6 +19,7 @@ public abstract class BaseActionExecutor implements ActionExecutor {
 	private Map<String, Object> sharpArgumentsMap;
 	private Map<String, Object> regularArgumentsMap;
 	private EngineContext engineContext;
+	private boolean validated = false;
 
 	/**
 	 * Gets the current map of arguments preceded with '#'.
@@ -104,6 +105,9 @@ public abstract class BaseActionExecutor implements ActionExecutor {
 		List<ActionError> errors = onValidate(sharpArgumentsMap, regularArgumentsMap);
 		setSharpArgumentsMap(sharpArgumentsMap);
 		setRegularArgumentsMap(regularArgumentsMap);
+		if ((errors == null) || (errors.size() == 0)) {
+			validated = true;
+		}
 		return errors;
 	}
 	
@@ -117,12 +121,17 @@ public abstract class BaseActionExecutor implements ActionExecutor {
 	 *                                 have been matched by the conditions list
 	 *                                 clause.
 	 *                                 
-	 * @throws ExecutionException If there are any problems while executing this action.
+	 * @throws ExecutionException If no previous validation has been performed or previous
+	 *                            validation has error, or if reported an exception during execution.
 	 * 
 	 * @see org.rulemaker.engine.executors.ActionExecutor
 	 */
 	public final void execute(List<Object> conditionMatchingObjects) throws ExecutionException {
-		onExecute(conditionMatchingObjects);
+		if (validated) {
+			onExecute(conditionMatchingObjects);
+		} else {
+			throw new ExecutionException("Execution not performed with previous validation or there were validation errors");
+		}
 	}
 	
 	/**

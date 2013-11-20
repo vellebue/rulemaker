@@ -33,6 +33,12 @@ public class BaseActionExecutorTest {
 		}
 	}
 	
+	@Test(expected = ExecutionException.class)
+	public void shouldPerformExecutionExceptionWhenExecutingwithoutValidating() {
+		DummyPersonExecutor executor = new DummyPersonExecutor();
+		executor.execute(null);
+	}
+	
 	@Test
 	public void shouldPutArgumentsIntoTargetObjectWhenMapIsOk() throws Exception {
 		Map<String, Object> originMap = new HashMap<String, Object>();
