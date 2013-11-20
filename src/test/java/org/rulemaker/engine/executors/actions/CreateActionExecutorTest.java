@@ -82,4 +82,55 @@ public class CreateActionExecutorTest {
 		assertEquals("Joe", fact.getMember1());
 		assertEquals(new Integer(32), fact.getMember2());
 	}
+	
+	@Test
+	public void shouldCreateAnInstanceGivenItsClassNameAsASynonymOnDefaultDomain() throws Exception {
+		Map<String, Object> sharpArgumentsMap = new HashMap<String, Object>();
+		Map<String, Object> regularArgumentsMap = new HashMap<String, Object>();
+		sharpArgumentsMap.put("className", "TestFact");
+		EngineContext context = new EngineContext(null);
+		context.registerClass("TestFact", TestFact.class);
+		regularArgumentsMap.put("member1", "Joe");
+		regularArgumentsMap.put("member2", 32);
+		CreateActionExecutor executor = new CreateActionExecutor();
+		executor.setEngineContext(context);
+		List<ActionError> errors = executor.validate(sharpArgumentsMap, regularArgumentsMap);
+		// There will not be validation errors
+		assertTrue((errors == null) || (errors.size() == 0));
+		executor.execute(null);
+		// There must be a registered fact with the given data
+		List<Object> factList = context.getFactList();
+		assertEquals(1, factList.size());
+		assertTrue(factList.get(0) instanceof  TestFact);
+		TestFact fact = (TestFact) factList.get(0);
+		assertEquals("Joe", fact.getMember1());
+		assertEquals(new Integer(32), fact.getMember2());
+	}
+	
+	@Test
+	public void shouldReportAnErrorWhenNoClassIsGiven() throws Exception {
+		Map<String, Object> sharpArgumentsMap = new HashMap<String, Object>();
+		Map<String, Object> regularArgumentsMap = new HashMap<String, Object>();
+		EngineContext context = new EngineContext(null);
+		CreateActionExecutor executor = new CreateActionExecutor();
+		executor.setEngineContext(context);
+		List<ActionError> errors = executor.validate(sharpArgumentsMap, regularArgumentsMap);
+		assertEquals(1, errors.size());
+		ActionError error = errors.get(0);
+		assertEquals("A String #className argument is required to build fact",error.getDescription());
+	}
+	
+	@Test
+	public void shouldReportAnErrorWhenTheGivenClassIsNotFound() throws Exception {
+		Map<String, Object> sharpArgumentsMap = new HashMap<String, Object>();
+		Map<String, Object> regularArgumentsMap = new HashMap<String, Object>();
+		sharpArgumentsMap.put("className", "UnexistingClass");
+		EngineContext context = new EngineContext(null);
+		CreateActionExecutor executor = new CreateActionExecutor();
+		executor.setEngineContext(context);
+		List<ActionError> errors = executor.validate(sharpArgumentsMap, regularArgumentsMap);
+		assertEquals(1, errors.size());
+		ActionError error = errors.get(0);
+		assertEquals("Class not found for #className=UnexistingClass",error.getDescription());
+	}
 }
