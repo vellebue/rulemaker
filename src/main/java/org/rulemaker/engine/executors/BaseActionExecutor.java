@@ -1,5 +1,6 @@
 package org.rulemaker.engine.executors;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -35,7 +36,7 @@ public abstract class BaseActionExecutor implements ActionExecutor {
 	 * @param sharpArgumentsMap The map of sharp arguments to be assigned.
 	 * 
 	 */
-	public void setSharpArgumentsMap(Map<String, Object> sharpArgumentsMap) {
+	private void setSharpArgumentsMap(Map<String, Object> sharpArgumentsMap) {
 		this.sharpArgumentsMap = sharpArgumentsMap;
 	}
 	
@@ -55,7 +56,7 @@ public abstract class BaseActionExecutor implements ActionExecutor {
 	 * @param regularArgumentsMap the current map of regular arguments.
 	 * 
 	 */
-	public void setRegularArgumentsMap(Map<String, Object> regularArgumentsMap) {
+	private void setRegularArgumentsMap(Map<String, Object> regularArgumentsMap) {
 		this.regularArgumentsMap = regularArgumentsMap;
 	}
 	
@@ -77,6 +78,51 @@ public abstract class BaseActionExecutor implements ActionExecutor {
 	 */
 	public void setEngineContext(EngineContext engineContext) {
 		this.engineContext = engineContext;
+	}
+	
+	/**
+	 * Performs validation process for this action arguments.
+	 * It uses {@link org.rulemaker.engine.executors.ActionExecutor onValidate}
+	 * to perform validation process.
+	 * 
+	 * @param sharpArgumentsMap A map containing arguments preceded by
+	 * '#' in action definition with their corresponding values. 
+	 * Notice that these arguments (their keys) are stored into map
+	 * without preceding '#' character.
+	 * 
+	 * @param regularArgumentsMap A map containing arguments corresponding
+	 * to setters in target objects.
+	 * 
+	 * @return A list containing validation errors for the arguments or null
+	 *         or an empty list if no validation errors are detected.
+	 *         
+	 * @see org.rulemaker.engine.executors.ActionExecutor
+	 *          
+	 */
+	public final List<ActionError> validate(Map<String, Object> sharpArgumentsMap,
+			  Map<String, Object> regularArgumentsMap) {
+		List<ActionError> errors = onValidate(sharpArgumentsMap, regularArgumentsMap);
+		setSharpArgumentsMap(sharpArgumentsMap);
+		setRegularArgumentsMap(regularArgumentsMap);
+		return errors;
+	}
+	
+	/**
+	 * Executes the action for this action in rule conforming to the implementation provided
+	 * by {@link org.rulemaker.engine.executors.ActionExecutor onExecute}.
+	 * 
+	 * @param conditionMatchingObjects A list containing the objects matched
+	 *                                 into the condition list in this rule.
+	 *                                 Objects are given in the same order they
+	 *                                 have been matched by the conditions list
+	 *                                 clause.
+	 *                                 
+	 * @throws ExecutionException If there are any problems while executing this action.
+	 * 
+	 * @see org.rulemaker.engine.executors.ActionExecutor
+	 */
+	public final void execute(List<Object> conditionMatchingObjects) throws ExecutionException {
+		onExecute(conditionMatchingObjects);
 	}
 	
 	/**

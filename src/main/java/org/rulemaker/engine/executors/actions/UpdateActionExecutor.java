@@ -8,11 +8,26 @@ import org.rulemaker.engine.executors.ActionError;
 import org.rulemaker.engine.executors.BaseActionExecutor;
 import org.rulemaker.engine.executors.exception.ExecutionException;
 
+/**
+ * Executor used to update facts given the fact to be updated.
+ * <br>
+ * Arguments: 
+ * <ul>
+ *   <li>
+ *   #target: Number of condition in condition list 
+ *                     (from 1 to N) that matches the selected fact 
+ *                     to be updated.
+ *   </li>
+ * </ul>
+ * 
+ * @author &Aacute;ngel Garc&iacute;a Bastanchuri
+ *
+ */
 public class UpdateActionExecutor extends BaseActionExecutor {
 	
 	private static final String SHARP_ARGUMENT_TARGET = "target";
 
-	public List<ActionError> validate(Map<String, Object> sharpArgumentsMap,
+	public List<ActionError> onValidate(Map<String, Object> sharpArgumentsMap,
 			Map<String, Object> regularArgumentsMap) {
 		List<ActionError> errors = new ArrayList<ActionError>();
 		// Look for #target argument.
@@ -29,7 +44,7 @@ public class UpdateActionExecutor extends BaseActionExecutor {
 		return errors;
 	}
 
-	public void execute(List<Object> conditionMatchingObjects) throws ExecutionException {
+	public void onExecute(List<Object> conditionMatchingObjects) throws ExecutionException {
 		Integer targetIndex = (Integer) this.getSharpArgumentsMap().get(SHARP_ARGUMENT_TARGET);
 		if ((conditionMatchingObjects == null) || (targetIndex > conditionMatchingObjects.size())) {
 			throw new ExecutionException("There is no condition object with index: " + targetIndex + " for this rule");

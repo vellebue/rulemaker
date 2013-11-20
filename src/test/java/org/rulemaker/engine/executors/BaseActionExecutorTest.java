@@ -5,9 +5,9 @@ import static org.junit.Assert.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import org.junit.Test;
+import org.rulemaker.engine.executors.exception.ExecutionException;
 import org.rulemaker.engine.matcher.Person;
 
 public class BaseActionExecutorTest {
@@ -16,13 +16,13 @@ public class BaseActionExecutorTest {
 		
 		private Person targetPerson; 
 
-		public List<ActionError> validate(
+		public List<ActionError> onValidate(
 				Map<String, Object> sharpArgumentsMap,
 				Map<String, Object> regularArgumentsMap) {
 			return null;
 		}
 
-		public void execute(List<Object> conditionMatchingObjects)
+		public void onExecute(List<Object> conditionMatchingObjects)
 				throws ExecutionException {
 			targetPerson = new Person("");
 			putArgumentsIntoTargetObject(targetPerson, getRegularArgumentsMap());
@@ -41,7 +41,7 @@ public class BaseActionExecutorTest {
 		originMap.put("height", 1.72F);
 		originMap.put("salary", 1345.23);
 		DummyPersonExecutor executor = new DummyPersonExecutor();
-		executor.setRegularArgumentsMap(originMap);
+		executor.validate(new HashMap<String, Object>(), originMap);
 		executor.execute(null);
 		Person targetPerson = executor.getTargetPerson();
 		assertEquals("John", targetPerson.getName());
@@ -58,7 +58,7 @@ public class BaseActionExecutorTest {
 		originMap.put("height", 1.72F);
 		originMap.put("salary", 1345.23);
 		DummyPersonExecutor executor = new DummyPersonExecutor();
-		executor.setRegularArgumentsMap(originMap);
+		executor.validate(new HashMap<String, Object>(), originMap);
 		executor.execute(null);
 		Person targetPerson = executor.getTargetPerson();
 		assertNull(targetPerson.getName());
@@ -72,7 +72,7 @@ public class BaseActionExecutorTest {
 		Map<String, Object> originMap = new HashMap<String, Object>();
 		originMap.put("unknownField", "John");
 		DummyPersonExecutor executor = new DummyPersonExecutor();
-		executor.setRegularArgumentsMap(originMap);
+		executor.validate(new HashMap<String, Object>(), originMap);
 		executor.execute(null);
 	}
 	
@@ -81,7 +81,7 @@ public class BaseActionExecutorTest {
 		Map<String, Object> originMap = new HashMap<String, Object>();
 		originMap.put("name", 16.9);
 		DummyPersonExecutor executor = new DummyPersonExecutor();
-		executor.setRegularArgumentsMap(originMap);
+		executor.validate(new HashMap<String, Object>(), originMap);
 		executor.execute(null);
 	}
 
