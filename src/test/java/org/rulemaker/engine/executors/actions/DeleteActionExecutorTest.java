@@ -32,10 +32,12 @@ public class DeleteActionExecutorTest {
 	}
 	
 	@Test
-	public void shouldRemoveAFactFromADomain() throws Exception {
+	public void shouldRemoveAFactFromADomainButOnlySelectedFactToDelete() throws Exception {
 		EngineContext context = new EngineContext(null);
-		Person person = new Person("John");
-		context.addFact("people", person);
+		Person john = new Person("John");
+		Person jaimie = new Person("Jaimie");
+		context.addFact("people", john);
+		context.addFact("peopleNotToBeDeleted", jaimie);
 		Map<String, Object> sharpArgumentsMap = new HashMap<String, Object>();
 		sharpArgumentsMap.put("target", 1);
 		DeleteActionExecutor executor = new DeleteActionExecutor();
@@ -43,8 +45,10 @@ public class DeleteActionExecutorTest {
 		// There should be no errors
 		assertTrue((errors == null) || (errors.size() == 0));
 		executor.setEngineContext(context);
-		executor.execute(Arrays.asList(new Object[]{person}));
+		executor.execute(Arrays.asList(new Object[]{john}));
 		// Person object must be deleted from facts list
 		assertEquals(0, context.getFactBase().get("people").size());
+		// But person from peopleNotToBeDeleted must remain
+		assertEquals(1, context.getFactBase().get("peopleNotToBeDeleted").size());
 	}
 }
