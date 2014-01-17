@@ -1,0 +1,66 @@
+package org.rulemaker.engine.actionengine;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+import org.rulemaker.engine.EngineContext;
+import org.rulemaker.engine.executors.ActionError;
+import org.rulemaker.engine.executors.BaseActionExecutor;
+import org.rulemaker.engine.executors.exception.ExecutionException;
+import org.rulemaker.engine.matcher.Person;
+import org.rulemaker.model.Rule;
+import org.rulemaker.parser.RulesParser;
+
+public class BaseActionEngineTest {
+	
+	/**
+	 * A test action executor that duplicates a field (integer) value
+	 * given the number of condition fact object and its name.
+	 * 
+	 * @author &Aacute;ngel Garc&iacute;a Bastanchuri
+	 *
+	 */
+	public static class DuplicateAgeActionExecutor extends BaseActionExecutor {
+
+		public DuplicateAgeActionExecutor() {
+			super();
+		}
+
+		public List<ActionError> onValidate(
+				Map<String, Object> sharpArgumentsMap,
+				Map<String, Object> regularArgumentsMap) {
+			// No validation problems notified
+			return null;
+		}
+
+		public void onExecute(List<Object> conditionMatchingObjects)
+				throws ExecutionException {
+			Integer index = (Integer) getSharpArgumentsMap().get("target");
+			Person person = (Person) conditionMatchingObjects.get(index - 1);
+			person.setAge(2 * person.getAge());
+		}
+		
+	}
+	
+	@Test
+	public void shouldExecuteAnActionExecutorCorrectly() throws Exception {
+		BaseActionEngine actionEngine = new BaseActionEngine();
+		List<Rule> rulesList =  RulesParser.getInstance().parseRules("-> duplicate(#target = 1)");
+		Person person = new Person("John Doe");
+		person.setAge(13);
+		EngineContext context = new EngineContext(rulesList);
+		context.addFact(person);
+		actionEngine.setEngineContext(context);
+		actionEngine.addExecutorClass("duplicate", DuplicateAgeActionExecutor.class);
+		Map<String, Object> matchingConditionVariables = new HashMap<String, Object>();
+		matchingConditionVariables.put("_1", person);
+		actionEngine.executeAction(matchingConditionVariables, rulesList.get(0).getActionList().get(0));
+		Person personUpdated = (Person) context.getFactList().get(0);
+		assertEquals(new Integer(26), personUpdated.getAge());
+	}
+
+}
