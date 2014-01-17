@@ -8,7 +8,7 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.rulemaker.model.Rule;
 
-public class RulesParser {
+public final class RulesParser {
 	
 	private static final RulesParser instance = new RulesParser();
 	 
