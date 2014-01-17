@@ -46,7 +46,7 @@ public class BaseActionEngine implements ActionEngine{
 					executor.execute(buildMatchingObjectsListFromMap(matchingConditionVariables));
 				}
 			} catch (Exception e) {
-				throw new ExecutionException(e);
+				throw new EngineException(e);
 			} 
 		} else {
 			throw new EngineException("Action executor type not found: " + actionName);
