@@ -39,6 +39,11 @@ public class ChainedMapTest {
 		assertEquals(2, chainedMap.size());
 	}
 	
+	@Test(expected = IllegalArgumentException.class)
+	public void shouldThrowIllegalArgumentExceptionWithANullMapArgument() throws Exception {
+		new ChainedMap<String, String>(null);
+	}
+	
 	@Test
 	public void shouldGetSizeThreeForAChainedMapBasedOnMapZeroAndMapOne() throws Exception {
 		ChainedMap<String, String> chainedMap = new ChainedMap<String, String>(mapOne, 
@@ -112,6 +117,15 @@ public class ChainedMapTest {
 		ChainedMap<String, String> chainedMap = new ChainedMap<String, String>(mapOne, 
 				new ChainedMap<String, String>(mapZero));
 		assertFalse(chainedMap.containsValue("valueW"));
+	}
+	
+	@Test
+	public void shouldContainValueCommonAssociatedWithTwoKeysInAChainedMapBasedOnMapZeroAndMapOne() throws Exception {
+		mapZero.put("U", "common");
+		mapOne.put("V", "common");
+		ChainedMap<String, String> chainedMap = new ChainedMap<String, String>(mapOne, 
+				new ChainedMap<String, String>(mapZero));
+		assertTrue(chainedMap.containsValue("common"));
 	}
 	
 	@Test
