@@ -38,10 +38,10 @@ public class ChainedMap<K,V> implements Map<K,V> {
 	 * 
 	 * @param map The map used to build this single map.
 	 * 
-	 * @throws NullPointerException If Map argument is null.
+	 * @throws IllegalArgumentException If Map argument is null.
 	 * 
 	 */
-	public ChainedMap(Map<K,V> map) throws NullPointerException {
+	public ChainedMap(Map<K,V> map) throws IllegalArgumentException {
 		this(map, null);
 	}
 	
@@ -55,12 +55,12 @@ public class ChainedMap<K,V> implements Map<K,V> {
 	 * @param chanedMap The chained map used as a base where the map
 	 *        will be put on the top.
 	 *        
-	 * @throws NullPointerException If Map argument is null.
+	 * @throws IllegalArgumentException If Map argument is null.
 	 * 
 	 */
-	public ChainedMap(Map<K,V> map, ChainedMap<K,V> chainedMap) throws NullPointerException {
+	public ChainedMap(Map<K,V> map, ChainedMap<K,V> chainedMap) throws IllegalArgumentException {
 		if (map == null) {
-			throw new NullPointerException("Map argument must not be null");
+			throw new IllegalArgumentException("Map argument must not be null");
 		} else {
 			currentMap = map;
 			innerChainedMap = chainedMap;
