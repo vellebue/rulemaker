@@ -1,6 +1,7 @@
 package org.rulemaker.engine.expressions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,20 +15,24 @@ import javassist.NotFoundException;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.rulemaker.engine.expressions.exception.InvalidExpressionException;
+import org.rulemaker.engine.matcher.ChainedMap;
 
 public class OgnlExpressionSolver implements ExpressionSolver {
 
 	public Object eval(Map<String, Object> contextMap, String expression)
 			throws InvalidExpressionException {
 		try {
-			String normalizedExpression = normalizeExpression(contextMap, expression);
-			Object finalValue = Ognl.getValue(normalizedExpression, contextMap,
-					buildRootObject(contextMap));	
+			ChainedMap<String, Object> chainedMap =
+					new ChainedMap<String, Object>(new HashMap<String, Object>(),
+							new ChainedMap<String, Object>(contextMap));
+			String normalizedExpression = normalizeExpression(chainedMap, expression);
+			Object finalValue = Ognl.getValue(normalizedExpression, chainedMap,
+					buildRootObject(chainedMap));	
 			return finalValue;
 		} catch (Exception e) {
 			throw new InvalidExpressionException(e);
 		} finally {
-			denormalizeContextMap(contextMap);
+			//denormalizeContextMap(contextMap);
 		}
 	}
 	
@@ -43,24 +48,24 @@ public class OgnlExpressionSolver implements ExpressionSolver {
 	 * 					 case will be replaced by a$OldName the same way.
 	 * @return
 	 */
-	private String normalizeExpression(Map<String, Object> contextMap, String expression) {
+	private String normalizeExpression(ChainedMap<String, Object> contextChainedMap, String expression) {
 		// Normalize variables to camel case notation
 		String normalizedExpression = expression;
 		// First locate variable names to be changed, starting with upper case.
 		List<String> variableNamesToBeChanged = new ArrayList<String>();
-		for (String variableName : contextMap.keySet()) {
+		for (String variableName : contextChainedMap.keySet()) {
 			String firstChar = variableName.charAt(0) + "";
 			if (firstChar.equals(firstChar.toUpperCase())) {
 				variableNamesToBeChanged.add(variableName);
 			}
 		}
-		// Then replace variable names by names starting with a$OldName
-		// both in the expression and in the context map
+		// Then put variables with names starting with a$OldName
+		// both in the expression and in the top of the chained map
 		for (String aVariableNameToBeChanged : variableNamesToBeChanged) {
-			Object variableValue = contextMap.remove(aVariableNameToBeChanged);
+			Object variableValue = contextChainedMap.get(aVariableNameToBeChanged);
 			String newVariableName = "a$" + aVariableNameToBeChanged;
 			normalizedExpression = replaceAll(normalizedExpression, aVariableNameToBeChanged, newVariableName);
-			contextMap.put(newVariableName, variableValue);
+			contextChainedMap.put(newVariableName, variableValue);
 		}
 		return normalizedExpression;
 	}

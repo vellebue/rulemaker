@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.rulemaker.engine.expressions.exception.InvalidExpressionException;
+import org.rulemaker.engine.matcher.ChainedMap;
 
 public abstract class ExpressionSolverTest {
 	
@@ -52,6 +53,21 @@ public abstract class ExpressionSolverTest {
 		Object result = expressionSolver.eval(contextMap, "joe.salary + paul.salary");
 		assertTrue("Result must be double", result instanceof Double);
 		assertEquals("3500.0", result.toString());
+	}
+	
+	@Test
+	public void shouldSolveAnExpressionWithVariableNamesPrecededByUnderscoreCharacter() throws Exception {
+		Person joe = new Person();
+		joe.setName("Joe");
+		Map<String, Object> innerMap = new HashMap<String, Object>();
+		innerMap.put("_1", joe);
+		ChainedMap<String, Object> contextMap = 
+				new ChainedMap<String, Object>(new HashMap<String, Object>(), 
+						new ChainedMap<String, Object>(innerMap)); 
+		Object result = expressionSolver.eval(contextMap, "_1.name");
+		assertTrue("Result must be String", result instanceof String);
+		assertEquals("Joe", result);
+		assertNotNull("Inner map must not be altered", innerMap.get("_1"));
 	}
 	
 	@Test
