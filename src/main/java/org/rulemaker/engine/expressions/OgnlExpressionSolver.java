@@ -110,14 +110,18 @@ public class OgnlExpressionSolver implements ExpressionSolver {
 		// Later add member fields and getter from contextMap
 		for (Map.Entry<String, Object> entry : contextMap.entrySet()) {
 			String propertyName = entry.getKey();
-			Object propertyValue = entry.getValue();
-			Class<?> propertyValueType = (propertyValue != null) ? propertyValue.getClass() : Object.class;
-			CtField properyCtField = new CtField(resolveCtClass(propertyValueType), propertyName, rootObjectCtClass);
-			rootObjectCtClass.addField(properyCtField);
-			CtMethod getterMethod = CtNewMethod.getter(resolveGetterName(propertyName), properyCtField);
-			rootObjectCtClass.addMethod(getterMethod);
-			CtMethod setterMethod = CtNewMethod.setter(resolveSetterName(propertyName), properyCtField);
-			rootObjectCtClass.addMethod(setterMethod);
+			String firstCharacterPropertyName = propertyName.substring(0, 1);
+			// Only properties that start with lower case characters are considered
+			if (!firstCharacterPropertyName.equals(firstCharacterPropertyName.toUpperCase())) {
+				Object propertyValue = entry.getValue();
+				Class<?> propertyValueType = (propertyValue != null) ? propertyValue.getClass() : Object.class;
+				CtField properyCtField = new CtField(resolveCtClass(propertyValueType), propertyName, rootObjectCtClass);
+				rootObjectCtClass.addField(properyCtField);
+				CtMethod getterMethod = CtNewMethod.getter(resolveGetterName(propertyName), properyCtField);
+				rootObjectCtClass.addMethod(getterMethod);
+				CtMethod setterMethod = CtNewMethod.setter(resolveSetterName(propertyName), properyCtField);
+				rootObjectCtClass.addMethod(setterMethod);
+			}
 		}
 		Class<?> rootObjectClass = rootObjectCtClass.toClass(new ClassLoader(Thread.currentThread().getContextClassLoader()) {}, null);
 		//String rootObjectClassSource = rootObjectCtClass.toString();
@@ -125,9 +129,12 @@ public class OgnlExpressionSolver implements ExpressionSolver {
 		Object rootObjectInstance = rootObjectClass.newInstance();
 		for (Map.Entry<String, Object> entry : contextMap.entrySet()) {
 			String propertyName = entry.getKey();
-			Object propertyValue = entry.getValue();
-			PropertyUtils
-					.setProperty(rootObjectInstance, propertyName, propertyValue);
+			String firstCharacterPropertyName = propertyName.substring(0, 1);
+			if (!firstCharacterPropertyName.equals(firstCharacterPropertyName.toUpperCase())) {
+				Object propertyValue = entry.getValue();
+				PropertyUtils
+						.setProperty(rootObjectInstance, propertyName, propertyValue);
+			}
 		}
 		rootObjectCtClass.detach();
 		return rootObjectInstance;
