@@ -1,6 +1,7 @@
 package org.rulemaker.engine.matcher;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -23,30 +24,43 @@ public class DefaultRuleMatcher implements RuleMatcher {
 	public static final String FACT_DOMAIN = "domain";
 	public static final String FACT_CONSTRAINT = "constraint";
 	
-	public List<Object> matches(EngineContext engineContext, Rule rule) throws MatchingException {
+	public Map<String, Object> matches(EngineContext engineContext, Rule rule) throws MatchingException {
 		// TODO Auto-generated method stub
-		return matches(engineContext, rule, 1);
+		return matches(engineContext, new HashMap<String, Object>(), rule, 1);
 	}
 
-	private List<Object> matches(EngineContext engineContext, Rule rule, int conditionIndex) throws MatchingException {
+	private Map<String, Object> matches(EngineContext engineContext, Map<String, Object> contextMap, Rule rule, int conditionIndex) throws MatchingException {
 		if (rule.getConditionList().size() == 0) {
 			// If there is no conditions matching is OK
 			// with 0 objects matched
+			/*
 			return new ArrayList<Object>();
+			*/
+			return contextMap;
 		} else {
 			// There is at least one condition, find and object that satisfies it
 			// and then figure out if there are more objects that satisfy the
 			// remaining conditions
-			List<Object> matchingObjectsList = null;
+			//List<Object> matchingObjectsList = null;
+			Map<String, Object> resultingMap = null;
 			Condition headCondition = removeHeadingConditionFromRule(rule);		
 			ConditionMatcher matcher = new ConditionMatcher();
 			matcher.setEngineContext(engineContext);
 			String domainName = extractDomainNameFromCondition(headCondition);
 			List<Object> factBaseObjects = engineContext.getFactBase().get(domainName);
 			Iterator<Object> factBaseObjectsIterator = factBaseObjects.iterator();
-			boolean foundMatching = false;
-			while (!foundMatching && factBaseObjectsIterator.hasNext()) {
+			//boolean foundMatching = false;
+			while ((resultingMap == null) && factBaseObjectsIterator.hasNext()) {
 				Object currentCandidateObject = factBaseObjectsIterator.next();
+				Map<String, Object> currentCandidateObjectMap = 
+						new ChainedMap<String, Object>(new HashMap<String, Object>(), 
+								new ChainedMap<String, Object>(contextMap));
+				if (matcher.matches(currentCandidateObject, currentCandidateObjectMap, headCondition)) {
+					// put object with index _i in context map
+					currentCandidateObjectMap.put("_" + conditionIndex, currentCandidateObject);
+					resultingMap = matches(engineContext,  currentCandidateObjectMap,rule, conditionIndex + 1);
+				}
+				/*
 				List<String> previousVariableNames = getGlobalVariableNamesAsList(engineContext.getGobalVariablesMap());
 				if (matcher.matches(currentCandidateObject, headCondition)) {
 					List<String> variableNamesAferMatching = getGlobalVariableNamesAsList(engineContext.getGobalVariablesMap());
@@ -64,13 +78,17 @@ public class DefaultRuleMatcher implements RuleMatcher {
 								engineContext.getGobalVariablesMap());
 					}
 				}
+				*/
 			}
 			rule.getConditionList().add(0, headCondition);
+			/*
 			if (foundMatching) {
 				return matchingObjectsList;
 			} else {
 				return null;
-			}			
+			}
+			*/
+			return resultingMap;
 		}
 	}
 	

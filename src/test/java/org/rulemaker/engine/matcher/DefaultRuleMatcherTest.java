@@ -2,7 +2,7 @@ package org.rulemaker.engine.matcher;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -62,9 +62,10 @@ public class DefaultRuleMatcherTest {
 				new Condition(Arrays.asList(new Term("name", Term.TermType.STRING, "John")))), 
 				new ArrayList<Action>());
 		RuleMatcher matcher = new DefaultRuleMatcher();
-		List<Object> matcherResults = matcher.matches(context, rule);
-		assertEquals(1, matcherResults.size());
-		assertEquals("John", ((Person) matcherResults.get(0)).getName());
+		Map<String, Object> matcherResults = matcher.matches(context, rule);
+		assertNotNull(matcherResults);
+		assertNotNull(matcherResults.get("_1"));
+		assertEquals("John", ((Person) matcherResults.get("_1")).getName());
 	}
 	
 	@Test(expected = MatchingException.class)
@@ -83,10 +84,13 @@ public class DefaultRuleMatcherTest {
 				new Condition(Arrays.asList(new Term("name", Term.TermType.STRING, "Jaimie")))), 
 				new ArrayList<Action>());
 		RuleMatcher matcher = new DefaultRuleMatcher();
-		List<Object> matcherResults = matcher.matches(context, rule);
+		Map<String, Object> matcherResults = matcher.matches(context, rule);
 		assertEquals(2, matcherResults.size());
-		assertEquals("John", ((Person) matcherResults.get(0)).getName());
-		assertEquals("Jaimie", ((Person) matcherResults.get(1)).getName());
+		assertNotNull(matcherResults);
+		assertNotNull(matcherResults.get("_1"));
+		assertNotNull(matcherResults.get("_2"));
+		assertEquals("John", ((Person) matcherResults.get("_1")).getName());
+		assertEquals("Jaimie", ((Person) matcherResults.get("_2")).getName());
 	}
 	
 	@Test
@@ -99,10 +103,12 @@ public class DefaultRuleMatcherTest {
 						                    new Term(DefaultRuleMatcher.FACT_CONSTRAINT, Term.TermType.EXPRESSION, "X < age", true)))), 
 				new ArrayList<Action>());
 		RuleMatcher matcher = new DefaultRuleMatcher();
-		List<Object> matcherResults = matcher.matches(context, rule);
-		assertEquals(2, matcherResults.size());
-		assertEquals("John", ((Person) matcherResults.get(0)).getName());
-		assertEquals("Jaimie", ((Person) matcherResults.get(1)).getName());
+		Map<String, Object> matcherResults = matcher.matches(context, rule);
+		assertNotNull(matcherResults);
+		assertNotNull(matcherResults.get("_1"));
+		assertNotNull(matcherResults.get("_2"));
+		assertEquals("John", ((Person) matcherResults.get("_1")).getName());
+		assertEquals("Jaimie", ((Person) matcherResults.get("_2")).getName());
 	}
 	
 	@Test
@@ -112,10 +118,12 @@ public class DefaultRuleMatcherTest {
 				new Condition(Arrays.asList(new Term(DefaultRuleMatcher.FACT_CONSTRAINT, Term.TermType.EXPRESSION, "(age > 20) && (age < _1.age)", true)))), 
 				new ArrayList<Action>());
 		RuleMatcher matcher = new DefaultRuleMatcher();
-		List<Object> matcherResults = matcher.matches(context, rule);
-		assertEquals(2, matcherResults.size());
-		assertEquals("Tommy", ((Person) matcherResults.get(0)).getName());
-		assertEquals("Jaimie", ((Person) matcherResults.get(1)).getName());
+		Map<String, Object> matcherResults = matcher.matches(context, rule);
+		assertNotNull(matcherResults);
+		assertNotNull(matcherResults.get("_1"));
+		assertNotNull(matcherResults.get("_2"));
+		assertEquals("Tommy", ((Person) matcherResults.get("_1")).getName());
+		assertEquals("Jaimie", ((Person) matcherResults.get("_2")).getName());
 	}
 	
 	@Test
@@ -126,11 +134,14 @@ public class DefaultRuleMatcherTest {
 				new Condition(Arrays.asList(new Term(DefaultRuleMatcher.FACT_CONSTRAINT, Term.TermType.EXPRESSION, "age < _2.age", true)))), 
 				new ArrayList<Action>());
 		RuleMatcher matcher = new DefaultRuleMatcher();
-		List<Object> matcherResults = matcher.matches(context, rule);
-		assertEquals(3, matcherResults.size());
-		assertEquals("Tommy", ((Person) matcherResults.get(0)).getName());
-		assertEquals("Jaimie", ((Person) matcherResults.get(1)).getName());
-		assertEquals("John", ((Person) matcherResults.get(2)).getName());
+		Map<String, Object> matcherResults = matcher.matches(context, rule);
+		assertNotNull(matcherResults);
+		assertNotNull(matcherResults.get("_1"));
+		assertNotNull(matcherResults.get("_2"));
+		assertNotNull(matcherResults.get("_3"));
+		assertEquals("Tommy", ((Person) matcherResults.get("_1")).getName());
+		assertEquals("Jaimie", ((Person) matcherResults.get("_2")).getName());
+		assertEquals("John", ((Person) matcherResults.get("_3")).getName());
 	}
 	
 	@Test
@@ -141,10 +152,12 @@ public class DefaultRuleMatcherTest {
 						                    new Term("personName", Term.TermType.STRING, "Jaimie")))), 
 				new ArrayList<Action>());
 		RuleMatcher matcher = new DefaultRuleMatcher();
-		List<Object> matcherResults = matcher.matches(context, rule);
-		assertEquals(2, matcherResults.size());
-		Person jaimie = (Person) matcherResults.get(0);
-		MonthPayment jaimiePayment = (MonthPayment) matcherResults.get(1);
+		Map<String, Object> matcherResults = matcher.matches(context, rule);
+		assertNotNull(matcherResults);
+		assertNotNull(matcherResults.get("_1"));
+		assertNotNull(matcherResults.get("_2"));
+		Person jaimie = (Person) matcherResults.get("_1");
+		MonthPayment jaimiePayment = (MonthPayment) matcherResults.get("_2");
 		assertEquals("Jaimie", jaimie.getName());
 		assertEquals(932.15, jaimiePayment.getAmount(), 0.0);
 	}

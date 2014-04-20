@@ -1,6 +1,6 @@
 package org.rulemaker.engine.matcher;
 
-import java.util.List;
+import java.util.Map;
 
 import org.rulemaker.engine.EngineContext;
 import org.rulemaker.engine.matcher.exception.MatchingException;
@@ -26,15 +26,15 @@ public interface RuleMatcher {
 	 * @param rule A rule whose condition list will be examined looking for matching facts from
 	 * 			   the engine context.
 	 * 
-	 * @return A list of matching facts for the rule that has been provided. Notice in that case
-	 *         the size of the list will be the same as the number of conditions for the given rule
-	 *         and the order of the items in the list will correspond to the conditions in that rule.
-	 *         If there is no matching list for the given rule and the given engine context 
-	 *         <code>null</code> will be returned.
+	 * @return A map containing matching facts and matching variable values or 
+	 *         <code>null</code> if there is no matching facts set for this rule.
+	 *         Notice that matching facts can be found in this map stored under names
+	 *         "_1", "_2" ... "_n" once assumed this rule has n conditions. Variable values used
+	 *         to match conditions are also stored providing its values.
 	 *         
 	 * @throws MatchingException If there is a problem matching the rule with a fact. Usually due to
 	 *                           an error evaluating an expression.
 	 */
-	public List<Object> matches(EngineContext engineContext, Rule rule) throws MatchingException;
+	public Map<String, Object> matches(EngineContext engineContext, Rule rule) throws MatchingException;
 
 }
