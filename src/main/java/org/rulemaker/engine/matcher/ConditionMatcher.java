@@ -28,25 +28,34 @@ class ConditionMatcher {
 		this.engineContext = engineContext;
 	}
 
-	public boolean matches(Object object, Condition condition) throws MatchingException {
-		Map<String, Object> globalVariablesMap = getEngineContext().getGobalVariablesMap();
+	public boolean matches(Object object, Map<String, Object> globalVariablesMap, Condition condition) throws MatchingException {
 		Map<String, Object> objectMembersMap = buildMapFromObjectMembers(object);
-		// Add current object members to global variables map to make them available
-		// from expressions
-		globalVariablesMap.putAll(objectMembersMap);
+		ChainedMap<String, Object> globalMap = 
+				new ChainedMap<String, Object>(globalVariablesMap, 
+						new ChainedMap<String, Object>(objectMembersMap));
 		boolean matches = true;
 		List<Term> conditionTerms = condition.getTermsList();
 		Iterator<Term> iterator = conditionTerms.iterator();
 		while(matches && iterator.hasNext()) {
 			Term currentTerm = iterator.next();
-			TermMatcher termMatcher = TermMatcher.Factory.buildTermMatcher(engineContext , currentTerm);
+			TermMatcher termMatcher = TermMatcher.Factory.buildTermMatcher(engineContext, globalMap , currentTerm);
 			matches = termMatcher.matches(object);
 		}
-		// Remove object members due they are no longer available
-		removeKeysFromMap(globalVariablesMap, objectMembersMap.keySet());
 		return matches;
 	}
 	
+	/**
+	 * Serializes an object into a map where the resulting map will have as keys 
+	 * the object member names (those which have getter methods) and the value of
+	 * each member will match with the value for each key in map.
+	 * 
+	 * @param object The object to serialize into the map.
+	 * 
+	 * @return The map resulting from the serialization process
+	 * 
+	 * @throws MatchingException If there is a problem during map serialization.
+	 * 
+	 */
 	private Map<String, Object> buildMapFromObjectMembers(Object object) throws MatchingException{
 		try {
 			@SuppressWarnings("unchecked")
@@ -55,12 +64,6 @@ class ConditionMatcher {
 			return map;
 		} catch (Exception e) {
 			throw new MatchingException(e);
-		}
-	}
-	
-	private void removeKeysFromMap(Map<String, Object> map, Set<String> keysToRemove) {
-		for (String aKey : keysToRemove) {
-			map.remove(aKey);
 		}
 	}
 }
