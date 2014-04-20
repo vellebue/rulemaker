@@ -31,9 +31,7 @@ public class OgnlExpressionSolver implements ExpressionSolver {
 			return finalValue;
 		} catch (Exception e) {
 			throw new InvalidExpressionException(e);
-		} finally {
-			//denormalizeContextMap(contextMap);
-		}
+		} 
 	}
 	
 	/**
@@ -68,27 +66,6 @@ public class OgnlExpressionSolver implements ExpressionSolver {
 			contextChainedMap.put(newVariableName, variableValue);
 		}
 		return normalizedExpression;
-	}
-	
-	/**
-	 * Denormalize context map replacing variable names starting with a$OldName with
-	 * their old variable names.
-	 *  
-	 * @param contextMap The context map where the variables to be denormalized are placed.
-	 */
-	private void denormalizeContextMap(Map<String, Object> contextMap) {
-		// Undo changes to context map due to camel case notation
-		List<String> variableNamesToBeRestored = new ArrayList<String>();
-		for (String variableName : contextMap.keySet()) {
-			if (variableName.startsWith("a$")) {
-				variableNamesToBeRestored.add(variableName);
-			}
-		}
-		for (String aVariableNameToBeRestored : variableNamesToBeRestored) {
-			String oldVariableName = aVariableNameToBeRestored.substring(2);
-			Object variableValue = contextMap.remove(aVariableNameToBeRestored);
-			contextMap.put(oldVariableName, variableValue);
-		}
 	}
 
 	/**
