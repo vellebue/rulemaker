@@ -10,8 +10,8 @@ public class HashTypeTermMatcher extends TermMatcher {
 	
 	private Map<String, Class<?>> classSinonymsMap;
 
-	protected HashTypeTermMatcher(EngineContext context, Term termPattern) {
-		super(context, termPattern);
+	protected HashTypeTermMatcher(EngineContext context, Map<String, Object> globalVariablesMap, Term termPattern) {
+		super(globalVariablesMap, termPattern);
 		classSinonymsMap = context.getClassSinonyms();
 	}
 	

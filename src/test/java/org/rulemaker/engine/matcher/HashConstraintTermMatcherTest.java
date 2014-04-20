@@ -1,5 +1,6 @@
 package org.rulemaker.engine.matcher;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -15,7 +16,8 @@ public class HashConstraintTermMatcherTest {
 	@Test
 	public void shouldBuildAConstraintTermMatcherForAConstraintTerm() throws Exception {
 		Term term = new Term(DefaultRuleMatcher.FACT_CONSTRAINT, Term.TermType.EXPRESSION, "X > 25", true);
-		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(new EngineContext(null), term);
+		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(
+				new EngineContext(null), new HashMap<String, Object>(), term);
 		assertTrue(matcher instanceof HashConstraintTermMatcher);
 	}
 	
@@ -27,7 +29,7 @@ public class HashConstraintTermMatcherTest {
 		Person targetPerson = new Person("John");
 		targetPerson.setAge(26);
 		transferObjectFieldsToMap(expressionMap, targetPerson);
-		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, term);
+		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, expressionMap, term);
 		assertTrue(matcher.matches(targetPerson));
 	}
 	
@@ -39,7 +41,7 @@ public class HashConstraintTermMatcherTest {
 		Person targetPerson = new Person("John");
 		targetPerson.setAge(26);
 		transferObjectFieldsToMap(expressionMap, targetPerson);
-		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, term);
+		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, expressionMap, term);
 		assertTrue(matcher.matches(targetPerson));
 	}
 	
@@ -51,7 +53,7 @@ public class HashConstraintTermMatcherTest {
 		Person targetPerson = new Person("John");
 		targetPerson.setAge(26);
 		transferObjectFieldsToMap(expressionMap, targetPerson);
-		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, term);
+		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, expressionMap, term);
 		assertFalse(matcher.matches(targetPerson));
 	}
 
@@ -64,7 +66,7 @@ public class HashConstraintTermMatcherTest {
 		Person targetPerson = new Person("John");
 		targetPerson.setAge(24);
 		transferObjectFieldsToMap(expressionMap, targetPerson);
-		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, term);
+		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, expressionMap, term);
 		assertFalse(matcher.matches(targetPerson));
 	}
 	
@@ -75,7 +77,7 @@ public class HashConstraintTermMatcherTest {
 		Map<String, Object> expressionMap = context.getGobalVariablesMap();
 		Person targetPerson = new Person("John");
 		transferObjectFieldsToMap(expressionMap, targetPerson);
-		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, term);
+		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, expressionMap, term);
 		@SuppressWarnings("unused")
 		boolean notObtainedResultDueToExpectedException = matcher.matches(targetPerson);
 	}
@@ -87,7 +89,7 @@ public class HashConstraintTermMatcherTest {
 		Map<String, Object> expressionMap = context.getGobalVariablesMap();
 		Person targetPerson = new Person("John");
 		transferObjectFieldsToMap(expressionMap, targetPerson);
-		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, term);
+		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, expressionMap, term);
 		assertFalse(matcher.matches(targetPerson));
 	}
 	
@@ -101,7 +103,7 @@ public class HashConstraintTermMatcherTest {
 		Person targetPerson = new Person("John");
 		targetPerson.setAge(24);
 		transferObjectFieldsToMap(expressionMap, targetPerson);
-		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, term);
+		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, expressionMap, term);
 		matcher.matches(targetPerson);
 	}
 	

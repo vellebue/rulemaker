@@ -1,5 +1,6 @@
 package org.rulemaker.engine.matcher;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
@@ -14,7 +15,8 @@ public class IdentifierTermMatcherTest {
 	@Test
 	public void shouldBuildAnIdentifierTestMatcherForIdentifierTerm() throws Exception {
 		Term term = new Term("name", Term.TermType.IDENTIFIER, "X");
-		TermMatcher matcher = Factory.buildTermMatcher(new EngineContext(null), term);
+		TermMatcher matcher = Factory.buildTermMatcher(new EngineContext(null),
+										new HashMap<String, Object>(), term);
 		assertTrue(matcher instanceof IdentifierTermMatcher);
 	}
 	
@@ -24,7 +26,7 @@ public class IdentifierTermMatcherTest {
 		EngineContext context = new EngineContext(null);
 		Map<String, Object> variablesMap = context.getGobalVariablesMap();
 		variablesMap.put("X", "John");
-		TermMatcher matcher = Factory.buildTermMatcher(context, term);
+		TermMatcher matcher = Factory.buildTermMatcher(context, variablesMap, term);
 		Person targetPerson = new Person("John");
 		assertTrue(matcher.matches(targetPerson));
 	}
@@ -35,7 +37,7 @@ public class IdentifierTermMatcherTest {
 		EngineContext context = new EngineContext(null);
 		Map<String, Object> variablesMap = context.getGobalVariablesMap();
 		variablesMap.put("X", "Jaime");
-		TermMatcher matcher = Factory.buildTermMatcher(context, term);
+		TermMatcher matcher = Factory.buildTermMatcher(context, variablesMap, term);
 		Person targetPerson = new Person("John");
 		assertFalse(matcher.matches(targetPerson));
 	}
@@ -44,8 +46,8 @@ public class IdentifierTermMatcherTest {
 	public void shouldMatchAnIdentifierNotRegisteredBeforeAndRegisterItWhithCurrentValue() throws Exception {
 		Term term = new Term("name", Term.TermType.IDENTIFIER, "X");
 		EngineContext context = new EngineContext(null);
-		Map<String, Object> variablesMap = context.getGobalVariablesMap();
-		TermMatcher matcher = Factory.buildTermMatcher(context, term);
+		Map<String, Object> variablesMap = new HashMap<String, Object>();
+		TermMatcher matcher = Factory.buildTermMatcher(context, variablesMap, term);
 		Person targetPerson = new Person("John");
 		assertTrue(matcher.matches(targetPerson));
 		assertTrue(variablesMap.containsKey("X"));
@@ -56,7 +58,7 @@ public class IdentifierTermMatcherTest {
 	public void shouldNotMatchAnObjectWithNoMatchingPropertyName() throws Exception {
 		Term term = new Term("surname", Term.TermType.IDENTIFIER, "X");
 		EngineContext context = new EngineContext(null);
-		TermMatcher matcher = Factory.buildTermMatcher(context, term);
+		TermMatcher matcher = Factory.buildTermMatcher(context, new HashMap<String, Object>(), term);
 		Person targetPerson = new Person("John");
 		assertFalse(matcher.matches(targetPerson));
 	}

@@ -1,5 +1,6 @@
 package org.rulemaker.engine.matcher;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -14,7 +15,8 @@ public class ExpressionTermMatcherTest {
 	@Test
 	public void shouldBuildAnExpressionTermMatcherForAnExpressionTerm() throws Exception {
 		Term term = new Term("age", Term.TermType.EXPRESSION, "17 + 2");
-		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(new EngineContext(null), term);
+		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(new EngineContext(null),
+											new HashMap<String, Object>(), term);
 		assertTrue(matcher instanceof ExpressionTermMatcher);
 	}
 	
@@ -22,7 +24,8 @@ public class ExpressionTermMatcherTest {
 	public void shouldMatchObjectWithMatchingExpressionValue() throws Exception {
 		Term term = new Term("age", Term.TermType.EXPRESSION, "17 + 2");
 		Person targetObject = new Person("John");
-		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(new EngineContext(null), term);
+		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(new EngineContext(null), 
+											new HashMap<String, Object>(), term);
 		targetObject.setAge(19);
 		assertTrue(matcher.matches(targetObject));
 	}
@@ -34,7 +37,7 @@ public class ExpressionTermMatcherTest {
 		Map<String, Object> variablesMap = context.getGobalVariablesMap();
 		variablesMap.put("X", 2);
 		Person targetObject = new Person("John");
-		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, term);
+		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, variablesMap, term);
 		targetObject.setAge(19);
 		assertTrue(matcher.matches(targetObject));
 	}
@@ -46,7 +49,7 @@ public class ExpressionTermMatcherTest {
 		Map<String, Object> variablesMap = context.getGobalVariablesMap();
 		variablesMap.put("X", 2);
 		Person targetObject = new Person("John");
-		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, term);
+		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, variablesMap, term);
 		targetObject.setAge(23);
 		assertTrue(matcher.matches(targetObject));
 	}
@@ -58,7 +61,7 @@ public class ExpressionTermMatcherTest {
 		Map<String, Object> variablesMap = context.getGobalVariablesMap();
 		variablesMap.put("X", 2);
 		Person targetObject = new Person("John");
-		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, term);
+		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, variablesMap, term);
 		targetObject.setAge(-1);
 		assertFalse(matcher.matches(targetObject));
 	}
@@ -70,7 +73,7 @@ public class ExpressionTermMatcherTest {
 		Map<String, Object> variablesMap = context.getGobalVariablesMap();
 		variablesMap.put("X", 2);
 		Person targetObject = new Person("John");
-		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, term);
+		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, variablesMap, term);
 		targetObject.setAge(-1);
 		assertFalse(matcher.matches(targetObject));
 	}
@@ -82,7 +85,7 @@ public class ExpressionTermMatcherTest {
 		Map<String, Object> variablesMap = context.getGobalVariablesMap();
 		//variablesMap.put("X", 2);
 		Person targetObject = new Person("John");
-		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, term);
+		TermMatcher matcher = TermMatcher.Factory.buildTermMatcher(context, variablesMap, term);
 		targetObject.setAge(-1);
 		matcher.matches(targetObject);
 	}

@@ -1,5 +1,7 @@
 package org.rulemaker.engine.matcher;
 
+import java.util.Map;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.rulemaker.engine.EngineContext;
 import org.rulemaker.engine.expressions.ExpressionSolver;
@@ -11,9 +13,9 @@ public class ExpressionTermMatcher extends TermMatcher {
 	
 	private ExpressionSolver expressionSolver;
 
-	protected ExpressionTermMatcher(ExpressionSolver solver, EngineContext context,
+	protected ExpressionTermMatcher(ExpressionSolver solver, Map<String, Object> globalVariablesMap,
 			Term termPattern) {
-		super(context, termPattern);
+		super(globalVariablesMap, termPattern);
 		this.expressionSolver = solver;
 	}
 
