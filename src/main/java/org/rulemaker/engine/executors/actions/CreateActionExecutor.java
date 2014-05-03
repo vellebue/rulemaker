@@ -24,7 +24,7 @@ import org.rulemaker.engine.executors.exception.ExecutionException;
  *   </li>
  *   <li>
  *   #domain: (Optional) The name of the domain where the new fact should be 
- *                        registered. It must be a String. 
+ *                       registered. It must be a String. 
  *   </li>
  *  </ul> 
  * @author &Aacute;ngel Garc&iacute;a Bastanchuri
@@ -87,7 +87,7 @@ public class CreateActionExecutor extends BaseActionExecutor {
 		return errors;
 	}
 
-	public void onExecute(List<Object> conditionMatchingObjects)
+	public void onExecute(Map<String, Object> conditionMatchingMap)
 			throws ExecutionException {
 		// Get target type
 		try {

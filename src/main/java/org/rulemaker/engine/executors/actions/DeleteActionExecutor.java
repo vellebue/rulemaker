@@ -23,10 +23,11 @@ import org.rulemaker.engine.executors.exception.ExecutionException;
 public class DeleteActionExecutor extends AbstractTargetActionExecutor {
 	
 
-	public void onExecute(List<Object> conditionMatchingObjects)
+	public void onExecute(Map<String, Object> conditionMatchingMap)
 			throws ExecutionException {
 		Integer targetIndex = (Integer) getSharpArgumentsMap().get("target");
-		Object targetObjectToDelete = conditionMatchingObjects.get(targetIndex - 1);
+		String targetFactName = "_" + targetIndex;
+		Object targetObjectToDelete = conditionMatchingMap.get(targetFactName);
 		Map<String, List<Object>> factsBase = getEngineContext().getFactBase();
 		removeFactFromFactBase(factsBase, targetObjectToDelete);
 	}

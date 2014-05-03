@@ -1,6 +1,6 @@
 package org.rulemaker.engine.executors.actions;
 
-import java.util.List;
+import java.util.Map;
 
 import org.rulemaker.engine.executors.exception.ExecutionException;
 
@@ -21,12 +21,13 @@ import org.rulemaker.engine.executors.exception.ExecutionException;
  */
 public class UpdateActionExecutor extends AbstractTargetActionExecutor {
 	
-	public void onExecute(List<Object> conditionMatchingObjects) throws ExecutionException {
+	public void onExecute(Map<String, Object> conditionMatchingMap) throws ExecutionException {
 		Integer targetIndex = (Integer) this.getSharpArgumentsMap().get(SHARP_ARGUMENT_TARGET);
-		if ((conditionMatchingObjects == null) || (targetIndex > conditionMatchingObjects.size())) {
-			throw new ExecutionException("There is no condition object with index: " + targetIndex + " for this rule");
+		String targetFactName = "_" + targetIndex;
+		if ((conditionMatchingMap == null) || (conditionMatchingMap.get(targetFactName) == null)) {
+			throw new ExecutionException("There is no condition object with name: " + targetFactName + " for this rule");
 		} else {
-			Object targetObject = conditionMatchingObjects.get(targetIndex - 1);
+			Object targetObject = conditionMatchingMap.get(targetFactName);
 			putArgumentsIntoTargetObject(targetObject, getRegularArgumentsMap());
 		}
 	}

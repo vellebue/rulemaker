@@ -115,20 +115,21 @@ public abstract class BaseActionExecutor implements ActionExecutor {
 	 * Executes the action for this action in rule conforming to the implementation provided
 	 * by {@link org.rulemaker.engine.executors.ActionExecutor onExecute}.
 	 * 
-	 * @param conditionMatchingObjects A list containing the objects matched
-	 *                                 into the condition list in this rule.
-	 *                                 Objects are given in the same order they
-	 *                                 have been matched by the conditions list
-	 *                                 clause.
+	 * @param conditionMatchingMap A map containing the objects matched
+	 *                             by a matching process. The matching objects
+	 *                             should be named as "_1", "_2" ... "_n" respectively
+	 *                             for the first, second... and nth matching fact in the
+	 *                             conditions rule list. The map must also include the variables
+	 *                             referred by the conditions and its values.
 	 *                                 
 	 * @throws ExecutionException If no previous validation has been performed or previous
 	 *                            validation has error, or if reported an exception during execution.
 	 * 
 	 * @see org.rulemaker.engine.executors.ActionExecutor
 	 */
-	public final void execute(List<Object> conditionMatchingObjects) throws ExecutionException {
+	public final void execute(Map<String, Object> conditionMatchingMap) throws ExecutionException {
 		if (validated) {
-			onExecute(conditionMatchingObjects);
+			onExecute(conditionMatchingMap);
 		} else {
 			throw new ExecutionException("Execution not performed with previous validation or there were validation errors");
 		}

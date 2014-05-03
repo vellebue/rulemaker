@@ -40,14 +40,15 @@ public interface ActionExecutor {
 	/**
 	 * Performs action execution for this action in rule.
 	 * 
-	 * @param conditionMatchingObjects A list containing the objects matched
-	 *                                 into the condition list in this rule.
-	 *                                 Objects are given in the same order they
-	 *                                 have been matched by the conditions list
-	 *                                 clause.
+	 * @param conditionMatchingMap A map containing the objects matched
+	 *                             by a matching process. The matching objects
+	 *                             should be named as "_1", "_2" ... "_n" respectively
+	 *                             for the first, second... and nth matching fact in the
+	 *                             conditions rule list. The map must also include the variables
+	 *                             referred by the conditions and its values.  
 	 *                                 
 	 * @throws ExecutionException If there are any problems while executing this action.
 	 */
-	public void onExecute(List<Object> conditionMatchingObjects) throws ExecutionException;
+	public void onExecute(Map<String, Object> conditionMatchingMap) throws ExecutionException;
 
 }

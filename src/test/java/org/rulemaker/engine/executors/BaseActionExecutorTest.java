@@ -22,7 +22,7 @@ public class BaseActionExecutorTest {
 			return null;
 		}
 
-		public void onExecute(List<Object> conditionMatchingObjects)
+		public void onExecute(Map<String, Object> conditionMatchingMap)
 				throws ExecutionException {
 			targetPerson = new Person("");
 			putArgumentsIntoTargetObject(targetPerson, getRegularArgumentsMap());

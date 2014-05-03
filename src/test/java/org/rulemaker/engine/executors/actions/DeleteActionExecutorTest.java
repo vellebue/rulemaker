@@ -1,6 +1,6 @@
 package org.rulemaker.engine.executors.actions;
 
-import java.util.Arrays;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +26,9 @@ public class DeleteActionExecutorTest {
 		// There should be no errors
 		assertTrue((errors == null) || (errors.size() == 0));
 		executor.setEngineContext(context);
-		executor.execute(Arrays.asList(new Object[]{person}));
+		Map<String, Object> executionMap = new HashMap<String, Object>();
+		executionMap.put("_1", person);
+		executor.execute(executionMap);
 		// Person object must be deleted from facts list
 		assertEquals(0, context.getFactList().size());
 	}
@@ -45,7 +47,9 @@ public class DeleteActionExecutorTest {
 		// There should be no errors
 		assertTrue((errors == null) || (errors.size() == 0));
 		executor.setEngineContext(context);
-		executor.execute(Arrays.asList(new Object[]{john}));
+		Map<String, Object> executionMap = new HashMap<String, Object>();
+		executionMap.put("_1", john);
+		executor.execute(executionMap);
 		// Person object must be deleted from facts list
 		assertEquals(0, context.getFactBase().get("people").size());
 		// But person from peopleNotToBeDeleted must remain

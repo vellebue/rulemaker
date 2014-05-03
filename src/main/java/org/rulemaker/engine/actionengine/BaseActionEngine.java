@@ -1,6 +1,5 @@
 package org.rulemaker.engine.actionengine;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +8,6 @@ import org.rulemaker.engine.EngineContext;
 import org.rulemaker.engine.EngineException;
 import org.rulemaker.engine.executors.ActionError;
 import org.rulemaker.engine.executors.BaseActionExecutor;
-import org.rulemaker.engine.executors.exception.ExecutionException;
 import org.rulemaker.engine.expressions.ExpressionSolver;
 import org.rulemaker.engine.expressions.OgnlExpressionSolver;
 import org.rulemaker.engine.expressions.exception.InvalidExpressionException;
@@ -43,7 +41,7 @@ public class BaseActionEngine implements ActionEngine{
 					//notify errors throwing exception 
 					throw buildEngineExceptionFromActionErrors(actionErrors);
 				} else {
-					executor.execute(buildMatchingObjectsListFromMap(matchingConditionVariables));
+					executor.execute(matchingConditionVariables);
 				}
 			} catch (Exception e) {
 				throw new EngineException(e);
@@ -128,21 +126,5 @@ public class BaseActionEngine implements ActionEngine{
 			i++;
 		}
 		return new EngineException(errorDescription.toString());
-	}
-
-	private List<Object> buildMatchingObjectsListFromMap(Map<String, Object> matchingConditionVariables) {
-		// First extract matching objects from map
-		Map<String, Object> resultMap = new HashMap<String, Object>();
-		for (String aVariableName : matchingConditionVariables.keySet()) {
-			if (aVariableName.startsWith("_")) {
-				resultMap.put(aVariableName, matchingConditionVariables.get(aVariableName));
-			}
-		}
-		// Then build the list in the right order
-		List<Object> matchingObjectsList  = new ArrayList<Object>();
-		for (int i = 0 ; i < resultMap.size() ; i++) {
-			matchingObjectsList.add(resultMap.get("_" + (i + 1)));
-		}
-		return matchingObjectsList;
 	}
 }
