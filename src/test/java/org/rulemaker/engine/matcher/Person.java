@@ -6,6 +6,9 @@ public class Person {
 	private Integer age;
 	private Double salary;
 	private Float height;
+	
+	public Person() {
+	}
 
 	public Person(String name) {
 		super();

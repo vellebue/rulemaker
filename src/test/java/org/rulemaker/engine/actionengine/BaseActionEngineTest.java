@@ -13,6 +13,7 @@ import org.rulemaker.engine.EngineContext;
 import org.rulemaker.engine.EngineException;
 import org.rulemaker.engine.executors.ActionError;
 import org.rulemaker.engine.executors.BaseActionExecutor;
+import org.rulemaker.engine.executors.actions.UpdateActionExecutor;
 import org.rulemaker.engine.executors.exception.ExecutionException;
 import org.rulemaker.engine.matcher.Person;
 import org.rulemaker.model.Rule;
@@ -162,5 +163,24 @@ public class BaseActionEngineTest {
 		matchingConditionVariables.put("_1", person);
 		actionEngine.executeAction(matchingConditionVariables, rulesList.get(0).getActionList().get(0));
 	}
-
+	
+	@Test
+	public void shouldExecuteAnUpdateActionExecutorWithACompleteUpdateSetProperly() throws Exception {
+		BaseActionEngine actionEngine = new BaseActionEngine();
+		List<Rule> rulesList =  RulesParser.getInstance().parseRules(
+				"-> update(#target=1, name='Jeremy Irons', age=${_1.getAge() + 3}, salary=1280.33, height=1.83)");
+		Person person = new Person("John Doe");
+		person.setAge(28);
+		EngineContext context = new EngineContext(rulesList);
+		context.addFact(person);
+		actionEngine.setEngineContext(context);
+		actionEngine.addExecutorClass("update", UpdateActionExecutor.class);
+		Map<String, Object> matchingConditionVariables = new HashMap<String, Object>();
+		matchingConditionVariables.put("_1", person);
+		actionEngine.executeAction(matchingConditionVariables, rulesList.get(0).getActionList().get(0));
+		assertEquals("Jeremy Irons", person.getName());
+		assertEquals(new Integer(31), person.getAge());
+		assertEquals(new Double(1280.33), person.getSalary());
+		assertEquals(new Float(1.83), person.getHeight());
+	}
 }

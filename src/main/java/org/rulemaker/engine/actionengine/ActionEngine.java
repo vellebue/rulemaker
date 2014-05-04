@@ -5,7 +5,6 @@ import java.util.Map;
 import org.rulemaker.engine.EngineContext;
 import org.rulemaker.engine.EngineException;
 import org.rulemaker.engine.executors.BaseActionExecutor;
-import org.rulemaker.engine.expressions.ExpressionSolver;
 import org.rulemaker.model.Action;
 
 /**

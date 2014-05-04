@@ -162,8 +162,8 @@ public abstract class BaseActionExecutor implements ActionExecutor {
 					Class<?> targetArgumentType = PropertyUtils.getPropertyType(targetObject, aKey);
 					Object value = argumentsMap.get(aKey);
 					Class<?> valueType = (value != null) ? value.getClass() : Object.class;
-					if (targetArgumentType.isAssignableFrom(valueType) || (value == null)) {
-						PropertyUtils.setProperty(targetObject, aKey, value);
+					if (isAssignableFrom(targetArgumentType, valueType) || (value == null)) {
+						PropertyUtils.setProperty(targetObject, aKey, convertTo(targetArgumentType, value));
 					} else {
 						throw new ExecutionException("Incompatible types in target object: "
 								+ "expected " + targetArgumentType.getName() + " but was " 
@@ -178,5 +178,84 @@ public abstract class BaseActionExecutor implements ActionExecutor {
 						" in object with type: " + targetObject.getClass().getName());
 			}
 		}
+	}
+	
+	/**
+	 * Verifies if target type is assignable from type.
+	 * It is a generalization of {@link java.lang.Class#isAssignableFrom(Class) isAssignableFrom(Class)}
+	 * from {@link java.lang.Class java.lang.Class}. But it will consider every type assignable to 
+	 * String (using {@link java.lang.Object#toString() toString()}  method) and
+	 * it will consider automatic conversion values from Integer to Double or Float or between Float or Double
+	 * types. 
+	 * 
+	 * @param targetType The target type to figure out if it is possible to convert to it. 
+	 * 
+	 * @param type The source type of conversion.
+	 * 
+	 * @return true if conversion type is possible, false otherwise.
+	 * 
+	 */
+	private boolean isAssignableFrom(Class<?> targetType, Class<?> type) {
+		if (targetType.isAssignableFrom(type)) {
+			return true;
+		} else 
+		if (targetType.isAssignableFrom(String.class)) {
+			return true;
+		} else
+		if (targetType.isAssignableFrom(Double.class)) {
+			if (Number.class.isAssignableFrom(type)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		if (targetType.isAssignableFrom(Float.class)) {
+			if (Number.class.isAssignableFrom(type)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Converts a value into its equivalent from targetType
+	 * class. Conversion is possible if value is null
+	 * or {@link #isAssignableFrom(Class, Class) isAssignableFrom(targetType, value.getClass())}
+	 * returns true.
+	 * 
+	 * @param targetType The target type of conversion process.
+	 * 
+	 * @param value The value to be converted to a value from targetType
+	 * 
+	 * @return The resulting targetType value from conversion. If value
+	 *         is <code>null</code> an <code>null</code> value is returned.
+	 *         
+	 * 
+	 */
+	private Object convertTo(Class<?> targetType, Object value) 
+		throws IllegalArgumentException {
+		if (value == null) {
+			return null;
+		} 
+		else if (targetType.isAssignableFrom(value.getClass())) {
+			return value;
+		}
+		else if (targetType.isAssignableFrom(String.class)) {
+			return value.toString();
+		}
+		else if (targetType.isAssignableFrom(Double.class)) {
+			if (Number.class.isAssignableFrom(value.getClass())) {
+				return ((Number) value).doubleValue();
+			}
+		}
+		else if (targetType.isAssignableFrom(Float.class)) {
+			if (Number.class.isAssignableFrom(value.getClass())) {
+				return ((Number) value).floatValue();
+			}
+		}
+		throw new IllegalArgumentException("Not possible conversion from " + 
+		         value.getClass().getName() + " to " + targetType.getName());
 	}
 }

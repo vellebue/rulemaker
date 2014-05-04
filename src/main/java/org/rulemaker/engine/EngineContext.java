@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.rulemaker.model.Rule;
 
-public class EngineContext {
+public final class EngineContext {
 	
 	public static final String DEFAULT_DOMAIN_LIST_NAME = "$default"; 
 	
@@ -46,11 +46,11 @@ public class EngineContext {
 		return factBase.get(DEFAULT_DOMAIN_LIST_NAME);
 	}
 	
-	public void addFact(String ruleListName, Object fact) {
-		List<Object> factList = factBase.get(ruleListName);
+	public void addFact(String factDomain, Object fact) {
+		List<Object> factList = factBase.get(factDomain);
 		if (factList == null) {
 			factList = new ArrayList<Object>();
-			factBase.put(ruleListName, factList);
+			factBase.put(factDomain, factList);
 		}
 		factList.add(fact);
 	}
