@@ -85,7 +85,7 @@ public class BaseActionExecutorTest {
 	@Test(expected = org.rulemaker.engine.executors.exception.ExecutionException.class)
 	public void shouldThrowAnExceptionWhenThereIsAFieldInMapWhoseValueIsFromAnIncompatibleType() throws Exception {
 		Map<String, Object> originMap = new HashMap<String, Object>();
-		originMap.put("name", 16.9);
+		originMap.put("salary", "A lot of money");
 		DummyPersonExecutor executor = new DummyPersonExecutor();
 		executor.validate(new HashMap<String, Object>(), originMap);
 		executor.execute(null);

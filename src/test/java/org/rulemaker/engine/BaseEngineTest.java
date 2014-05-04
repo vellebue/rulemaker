@@ -23,6 +23,18 @@ public class BaseEngineTest {
 		}		
 	}
 	
+	public static class NullablePerson extends Person {
+
+		public NullablePerson(String name) {
+			super(name);
+		}
+		
+		public NullablePerson() {
+			super(null);
+		}
+		
+	}
+	
 	@Test
 	public void shouldPerformAnEngineStepCorrectly() throws Exception {
 		TestEngine engine = new 
@@ -62,7 +74,7 @@ public class BaseEngineTest {
 		john.setAge(24);
 		Person johanna = new Person("Johanna");
 		johanna.setAge(22);
-		engine.registerClassSinonym("Person", Person.class);
+		engine.registerClassSinonym("Person", NullablePerson.class);
 		engine.addFact(john);
 		engine.addFact(johanna);
 		boolean executed = engine.runStep();
