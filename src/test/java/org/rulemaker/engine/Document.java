@@ -6,6 +6,9 @@ public class Document {
 	private String documentType;
 	private Integer clientId;
 	
+	public Document() {
+	}
+	
 	public Document(Double amount, String documenType, Integer clientId) {
 		super();
 		this.amount = amount;
@@ -35,5 +38,11 @@ public class Document {
 	
 	public void setClientId(Integer clientId) {
 		this.clientId = clientId;
+	}
+	
+	public String toString() {
+		return "{amount: "+ amount + 
+				 ", documentType: " + documentType + 
+				 ", clientId: " + clientId + "}";
 	}
 }
