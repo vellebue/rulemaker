@@ -3,7 +3,6 @@ package org.rulemaker.engine.matcher;
 import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.rulemaker.engine.EngineContext;
 import org.rulemaker.engine.expressions.ExpressionSolver;
 import org.rulemaker.engine.expressions.exception.InvalidExpressionException;
 import org.rulemaker.engine.matcher.exception.MatchingException;

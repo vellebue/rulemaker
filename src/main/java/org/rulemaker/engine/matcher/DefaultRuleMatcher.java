@@ -25,7 +25,6 @@ public class DefaultRuleMatcher implements RuleMatcher {
 	public static final String FACT_CONSTRAINT = "constraint";
 	
 	public Map<String, Object> matches(EngineContext engineContext, Rule rule) throws MatchingException {
-		// TODO Auto-generated method stub
 		return matches(engineContext, new HashMap<String, Object>(), rule, 1);
 	}
 
@@ -107,6 +106,7 @@ public class DefaultRuleMatcher implements RuleMatcher {
 		return headingCondition;
 	}
 	
+	/*
 	private List<String> getGlobalVariableNamesAsList(Map<String, Object> variablesMap) {
 		List<String> variableNamesList = new ArrayList<String>();
 		for (String aVariableName : variablesMap.keySet()) {
@@ -136,6 +136,7 @@ public class DefaultRuleMatcher implements RuleMatcher {
 			variablesMap.remove(aName);
 		}
 	}
+	*/
 	
 	private String extractDomainNameFromCondition(Condition condition) {
 		Iterator<Term> termIterator = condition.getTermsList().iterator();
