@@ -160,6 +160,22 @@ public class ChainedMap<K,V> implements Map<K,V> {
 	}
 	
 	/**
+	 * Returns a String representation of this chained map.
+	 * 
+	 * @return The string representation
+	 * 
+	 */
+	public String toString() {
+		StringBuilder buffer = new StringBuilder();
+		for (Map.Entry<K, V> entry : entrySet()) {
+			String keyString = entry.getKey().toString();
+			String valueString = (entry.getValue() != null) ? entry.getValue().toString() : "null";
+			buffer.append(keyString + " -> " + valueString + "\n");			
+		}
+		return buffer.toString();
+	}
+	
+	/**
 	 * Gets the set of keys that map to a certain value
 	 * in this chained map.
 	 * 

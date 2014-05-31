@@ -291,5 +291,34 @@ public class ChainedMapTest {
 		actualValues.addAll(chainedMap.entrySet());
 		assertEquals(expectedValues, actualValues);
 	}
+	
+	@Test
+	public void shouldToStringReturnAProperValue() {
+		String expectedToStringResult = "one -> 1.0\n" +
+				"two -> 2.0\n"
+			  + "three -> null";
+		Map<String, Double> innerMap = new HashMap<String, Double>(); 
+		innerMap.put("two", 2.0);
+		Map<String, Double> map = new ChainedMap<String, Double>(innerMap);
+		map.put("one", 1.0);
+		map.put("three", null);
+		Map<String, String> expectedMap = buildMapFromString(expectedToStringResult);
+		for (Map.Entry<?, ?> entry : map.entrySet()) {
+			String entryKey = entry.getKey().toString();
+			String entryValue = ((entry.getValue() != null) ? entry.getValue().toString() : "null");
+			assertNotNull(expectedMap.get(entryKey));
+			assertEquals(expectedMap.get(entryKey), entryValue);
+		}
+	}
+	
+	private Map<String, String> buildMapFromString(String stringMap) {
+		String []lines = stringMap.split("\\n");
+		Map<String, String> map = new HashMap<String, String>();
+		for (String aLine : lines) {
+			String []keyValue = aLine.split("\\-\\>");
+			map.put(keyValue[0].trim(), keyValue[1].trim());
+		}
+		return map;
+	}
 
 }
