@@ -31,7 +31,7 @@ import org.rulemaker.parser.RulesParser;
  * @author &Aacute;ngel Garc&iacute;a Bastanchuri
  *
  */
-public class BaseEngine implements Engine {
+public abstract class BaseEngine implements Engine {
 	
 	private EngineContext context;
 	private Integer kFactor;
@@ -157,8 +157,7 @@ public class BaseEngine implements Engine {
 
 
 	public final void runEngine() throws EngineException {
-		// TODO Auto-generated method stub
-		
+		while (runStep());
 	}
 
 }

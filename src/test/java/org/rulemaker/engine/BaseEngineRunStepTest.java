@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 import org.rulemaker.engine.matcher.Person;
 import org.rulemaker.model.Rule;
 
-public class BaseEngineTest {
+public class BaseEngineRunStepTest {
 	
 	private class TestEngine extends BaseEngine {
 
