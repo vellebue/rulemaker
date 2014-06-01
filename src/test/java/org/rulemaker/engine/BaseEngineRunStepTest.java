@@ -12,17 +12,6 @@ import org.rulemaker.model.Rule;
 
 public class BaseEngineRunStepTest {
 	
-	private class TestEngine extends BaseEngine {
-
-		public TestEngine(List<Rule> rules) {
-			super(rules);
-		}
-
-		public TestEngine(String rulesText) throws EngineException {
-			super(rulesText);
-		}		
-	}
-	
 	public static class NullablePerson extends Person {
 
 		public NullablePerson(String name) {

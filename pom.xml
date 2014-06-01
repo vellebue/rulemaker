@@ -8,7 +8,7 @@
 	<name>rulemaker</name>
 	<url>http://maven.apache.org</url>
 	<properties>
-	    <project.version>0.2</project.version>
+	    <project.version>01.00.00</project.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<createChecksum>true</createChecksum>
 		<!--  maven.jar.override>on</maven.jar.override>

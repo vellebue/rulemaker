@@ -1,26 +1,9 @@
 package org.rulemaker.engine;
 
-import java.util.List;
-
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import org.rulemaker.model.Rule;
-
 public class BaseEngineRunEngineTest {
-	
-	private class TestEngine extends BaseEngine {
-		
-		public TestEngine(String rulesText) throws EngineException {
-			super(rulesText);
-			// TODO Auto-generated constructor stub
-		}
-
-		public TestEngine(List<Rule> rules) {
-			super(rules);
-			// TODO Auto-generated constructor stub
-		}	
-	}
 	
 	@Test
 	public void shouldTurnEveryDeliveryNoteIntoBill() throws Exception {
