@@ -35,9 +35,9 @@ public abstract class BaseEngine implements Engine {
 	
 	private EngineContext context;
 	private Integer kFactor;
-	//private Map<String, Class<? extends BaseActionExecutor>> actionExecutorsMap;
 	private ActionEngine actionEngine;
 	private RuleMatcher ruleMatcher;
+	private int currentStep = 0;
 	
 	/**
 	 * Builds an engine given its rules
@@ -143,6 +143,7 @@ public abstract class BaseEngine implements Engine {
 		}
 		if (matchingFactsMap != null) {
 			executeActionExecutors(matchingFactsMap, matchingRule);
+			currentStep++;
 			return true;
 		} else {
 			return false;
@@ -157,7 +158,21 @@ public abstract class BaseEngine implements Engine {
 
 
 	public final void runEngine() throws EngineException {
-		while (runStep());
+		int numFacts = countFacts();
+		while (runStep() && 
+			   ((kFactor == null) || (currentStep <= kFactor.intValue() * numFacts )));
+		if ((kFactor != null) && (currentStep > kFactor.intValue() * numFacts)) {
+			throw new EngineException("Exceded number of engine steps with k factor equals to " + kFactor);
+		}
+	}
+	
+	private int countFacts() {
+		Map<String, List<Object>> factBase = context.getFactBase();
+		int count = 0;
+		for (List<Object> aList : factBase.values()) {
+			count += (aList != null) ? aList.size() : 0;
+		}
+		return count;
 	}
 
 }

@@ -41,5 +41,45 @@ public class BaseEngineRunEngineTest {
 		assertEquals(100.78, firstBill.getAmount().doubleValue(), 0.01);
 		assertEquals(43.35, secondBill.getAmount().doubleValue(), 0.01);
 	}
+	
+	@Test
+	public void shouldTurnEveryDeliveryNoteIntoBillAndEveryBillIntoPayedBillwithNullKFactor() throws Exception {
+		Document [] deliveryNotes = {new Document(13.34, "deliveryNote", 1), 
+				new Document(26.12, "deliveryNote", 2)};
+		testTurningEveryDeliveryNoteIntoBillAndEveryBillIntoPayedBill(deliveryNotes, null);
+		// After running the engine there must be two payed bills
+		assertEquals("payedBill", deliveryNotes[0].getDocumentType());
+		assertEquals("payedBill", deliveryNotes[1].getDocumentType());
+	}
 
+	@Test(expected = EngineException.class)
+	public void shouldFailWithExceptionWhenTurningEveryDeliveryNoteIntoBillAndEveryBillIntoPayedBillWithKFactorEqualsToOne() 
+			throws Exception {
+		Document [] deliveryNotes = {new Document(13.34, "deliveryNote", 1), 
+				new Document(26.12, "deliveryNote", 2)};
+		testTurningEveryDeliveryNoteIntoBillAndEveryBillIntoPayedBill(deliveryNotes, 1);
+	}
+	
+	@Test
+	public void shouldPerformSucessfulWhenTurningEveryDeliveryNoteIntoBillAndEveryBillIntoPayedBillWithKFactorEqualsToTwo() 
+			throws Exception {
+		Document [] deliveryNotes = {new Document(13.34, "deliveryNote", 1), 
+				new Document(26.12, "deliveryNote", 2), new Document(17.23, "deliveryNote", 2)};
+		testTurningEveryDeliveryNoteIntoBillAndEveryBillIntoPayedBill(deliveryNotes, 2);
+		// After running the engine there must be three payed bills		
+		assertEquals("payedBill", deliveryNotes[0].getDocumentType());
+		assertEquals("payedBill", deliveryNotes[1].getDocumentType());
+		assertEquals("payedBill", deliveryNotes[2].getDocumentType());
+	}
+	
+	private void testTurningEveryDeliveryNoteIntoBillAndEveryBillIntoPayedBill(Document [] documents, Integer kFactor) throws Exception {
+		TestEngine engine = new TestEngine(" (documentType = 'deliveryNote') -> update(#target = 1, documentType = 'bill'); "
+				+ " (documentType = 'bill') -> update(#target = 1, documentType = 'payedBill') ");
+		engine.registerClassSinonym("Document", Document.class);
+		for (Document aDeliveryNote : documents) {
+			engine.addFact(aDeliveryNote);
+		}
+		engine.setkFactor(kFactor);
+		engine.runEngine();
+	}
 }
